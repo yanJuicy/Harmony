@@ -23,7 +23,7 @@ public abstract class Timestamped {
     private LocalDateTime createdAt;
 
     @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
+    @Column(length = 100, name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
     @LastModifiedDate
@@ -32,19 +32,20 @@ public abstract class Timestamped {
     private LocalDateTime updatedAt;
 
     @LastModifiedBy
-    @Column(name = "updated_by")
+    @Column(length = 100, name = "updated_by")
     private String updatedBy;
 
     @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
 
-    @Column(name = "deleted_by")
+    @Column(length = 100, name = "deleted_by")
     private String deletedBy;
 
-    @Column
+    @Column(name = "deleted")
     private boolean deleted = false;
 
+    // sort delete 메서드
     public void softDelete(String deletedBy) {
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = deletedBy;

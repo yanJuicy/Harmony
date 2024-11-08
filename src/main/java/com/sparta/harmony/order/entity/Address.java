@@ -2,10 +2,7 @@ package com.sparta.harmony.order.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Embeddable
 @Getter
@@ -13,19 +10,19 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Address {
 
-    @Column(nullable = false)
+    @Column(length = 6, nullable = false)
     private String postcode;
 
-    @Column(nullable = false)
+    @Column(length = 200, nullable = false)
     private String address;
 
-    @Column(nullable = false, name = "detail_address")
+    @Column(length = 200, name = "detail_address", nullable = false)
     private String detailAddress;
 
+    @Builder
     public Address(String postcode, String address, String detailAddress) {
         this.postcode = postcode;
         this.address = address;
         this.detailAddress = detailAddress;
     }
-
 }
