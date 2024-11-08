@@ -9,32 +9,35 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "p_order")
 @NoArgsConstructor
 public class Order extends Timestamped {
 
     @Id
-    @Column(nullable = false, name = "order_id")
-    private UUID id;
+    @Column(nullable = false)
+    private UUID order_id;
 
-    @Column(nullable = false, name = "user_id")
-    private UUID userId;
+//    @Column(nullable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user_id;
 
-    @Column(nullable = false, name = "order_status")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatusEnum orderStatus;
+    private OrderStatusEnum order_status;
 
-    @Column(nullable = false, name = "order_type")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderTypeEnum orderType;
+    private OrderTypeEnum order_type;
 
-    @Column(nullable = false, name = "special_requests")
-    private String specialRequest;
+    @Column(nullable = false)
+    private String special_request;
 
-    @Column(nullable = false, name = "total_amount")
-    private String totalAmount;
+    @Column(nullable = false)
+    private String total_amount;
 
     @Embedded
     private Address address;
+
+
 }
