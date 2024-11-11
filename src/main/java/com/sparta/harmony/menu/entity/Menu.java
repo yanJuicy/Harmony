@@ -4,6 +4,8 @@ import com.sparta.harmony.order.entity.Timestamped;
 import com.sparta.harmony.store.entity.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class Menu extends Timestamped {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID menuId;
 
     private String name;
@@ -39,10 +42,9 @@ public class Menu extends Timestamped {
     private Store store;
 
     @Builder
-    public Menu(UUID menuId, String name, String description,
+    public Menu(String name, String description,
                 int price, String imageUrl, boolean isAvailable,
                 boolean isHidden, Store store) {
-        this.menuId = menuId;
         this.name = name;
         this.description = description;
         this.price = price;
