@@ -15,13 +15,13 @@ import java.util.UUID;
 public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID user_id;
+    private UUID userId;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String user_name;
+    private String userName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -34,11 +34,11 @@ public class User extends Timestamped {
     private Address address;
 
     @Builder
-    public User(UUID user_id, String password, String user_name,
+    public User(UUID userId, String password, String userName,
                 String email, Role role, Address address) {
-        this.user_id = user_id;
+        this.userId = userId;
         this.password = password;
-        this.user_name = user_name;
+        this.userName = userName;
         this.email = email;
         this.role = role;
         this.address = address;
