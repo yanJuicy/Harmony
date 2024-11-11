@@ -29,8 +29,7 @@ public class OrderMenu extends Timestamped {
      * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
      */
     @Builder
-    public OrderMenu(UUID OrderMenuId, Order order, Menu menu, int quantity) {
-        this.OrderMenuId = OrderMenuId;
+    public OrderMenu(Order order, Menu menu, int quantity) {
         this.order = order;
         this.menu = menu;
         this.quantity = quantity;
