@@ -17,18 +17,18 @@ import java.util.UUID;
 public class Category extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID store_category_id;
+    private UUID storeCategoryId;
 
     @Column(nullable = false)
-    private String category_name;
+    private String categoryName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreCategory> storeCategories = new ArrayList<>();
 
     @Builder
-    public Category(UUID store_category_id, String category_name, List<StoreCategory> storeCategories) {
-        this.store_category_id = store_category_id;
-        this.category_name = category_name;
+    public Category(UUID storeCategoryId, String categoryName, List<StoreCategory> storeCategories) {
+        this.storeCategoryId = storeCategoryId;
+        this.categoryName = categoryName;
         this.storeCategories = storeCategories;
     }
 }

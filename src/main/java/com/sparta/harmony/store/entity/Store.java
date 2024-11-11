@@ -18,13 +18,13 @@ import java.util.UUID;
 public class Store extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID store_id;
+    private UUID storeId;
 
     @Column(nullable = false)
-    private String store_name;
+    private String storeName;
 
     @Column(nullable = false)
-    private String phone_number;
+    private String phoneNumber;
 
     @Embedded
     private Address address;
@@ -33,11 +33,11 @@ public class Store extends Timestamped {
     private List<StoreCategory> storeCategories = new ArrayList<>();
 
     @Builder
-    public Store(String store_name, String phone_number, Address address,
-                 UUID store_id, List<StoreCategory> storeCategories) {
-        this.store_id = store_id;
-        this.store_name = store_name;
-        this.phone_number = phone_number;
+    public Store(String storeName, String phoneNumber, Address address,
+                 UUID storeId, List<StoreCategory> storeCategories) {
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.phoneNumber = phoneNumber;
         this.address = address;
         this.storeCategories = storeCategories;
     }
