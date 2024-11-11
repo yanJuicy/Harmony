@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository;
-    private final OrderMenuRepository;
-    private final PaymentsRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMenuRepository orderMenuRepository;
+    private final PaymentsRepository paymentsRepository;
 
     public OrderResponseDto createOrder(OrderRequestDto requestDto, User user) {
         return null;

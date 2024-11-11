@@ -13,5 +13,4 @@ public class OrderRequestDto {
     @JsonProperty("order_id")
     private UUID orderId;
 
-
 }

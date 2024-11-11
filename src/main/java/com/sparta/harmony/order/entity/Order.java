@@ -33,7 +33,7 @@ public class Order extends Timestamped {
     @Enumerated(EnumType.STRING)
     private OrderTypeEnum orderType;
 
-    @Column(length = 200, name = "special_request", nullable = false)
+    @Column(length = 200, name = "special_request")
     private String specialRequest;
 
     @Column(name = "total_amount", nullable = false)
