@@ -1,36 +1,32 @@
 package com.sparta.harmony.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sparta.harmony.order.entity.OrderTypeEnum;
+import com.sparta.harmony.order.entity.Order;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 public class OrderResponseDto {
 
+    @NotNull
     @JsonProperty("order_id")
     private UUID orderId;
 
-    @JsonProperty("menu_id")
-    private List<OrderMenuDto> orderMenuDtoList = new ArrayList<>();
+    @NotNull
+    @JsonProperty("store_name")
+    private String storeName;
 
-    @JsonProperty("order_type")
-    private OrderTypeEnum orderType;
+    @NotNull
+    @JsonProperty("total_amount")
+    private int totalAmount;
 
-    private int quantity;
-
-    private String postcode;
-
-    private String address;
-
-    @JsonProperty("detail_address")
-    private String detailAddress;
-
-    @JsonProperty("special_request")
-    private String specialRequest;
+    public OrderResponseDto(Order order) {
+        this.orderId = order.getOrderId();
+        this.storeName = order.getStore().getStoreName();
+        this.totalAmount = order.getTotalAmount();
+    }
 }

@@ -29,8 +29,7 @@ public class Payments extends Timestamped {
      * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
      */
     @Builder
-    public Payments(UUID paymentsId, Order order, User user, int amount) {
-        this.paymentsId = paymentsId;
+    public Payments(Order order, User user, int amount) {
         this.order = order;
         this.user = user;
         this.amount = amount;

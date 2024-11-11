@@ -57,6 +57,8 @@ public class Order extends Timestamped {
     private List<OrderMenu> orderMenuList;
 
 
+
+
     /**
      * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
      */
@@ -66,11 +68,11 @@ public class Order extends Timestamped {
      * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
      */
     @Builder
-    public Order(UUID orderId, User user, OrderStatusEnum orderStatus,
+    public Order(User user, Store store, OrderStatusEnum orderStatus,
                  OrderTypeEnum orderType, String specialRequest,
                  int totalAmount, Address address, List<OrderMenu> orderMenuList) {
-        this.orderId = orderId;
         this.user = user;
+        this.store = store;
         this.orderStatus = orderStatus;
         this.orderType = orderType;
         this.specialRequest = specialRequest;
@@ -83,13 +85,4 @@ public class Order extends Timestamped {
     /**
      * 서비스 메소드 - 외부에서 엔티티를 수정할 메소드를 정의합니다. (단일 책임을 가지도록 주의합니다.)
      */
-    @PrePersist
-    @PreUpdate
-    private void calculateTotalAmount() {
-        this.totalAmount = orderMenuList.stream()
-                .mapToInt(orderMenuList -> orderMenuList.getQuantity() * orderMenuList.getMenu().getPrice())
-                .sum();
-    }
-
-
 }
