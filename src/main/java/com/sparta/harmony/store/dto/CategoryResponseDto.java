@@ -6,11 +6,11 @@ import java.util.UUID;
 
 @Getter
 public class CategoryResponseDto {
-    private UUID storeCategoryId;
+    private UUID categoryId;
     private String categoryName;
 
-    public CategoryResponseDto(UUID storeCategoryId, String categoryName) {
-        this.storeCategoryId = storeCategoryId;
+    public CategoryResponseDto(UUID categoryId, String categoryName) {
+        this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
 }
