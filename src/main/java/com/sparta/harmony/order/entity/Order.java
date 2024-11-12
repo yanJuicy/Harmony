@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class Order extends Timestamped {
     private Store store;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderMenu> orderMenuList;
+    private List<OrderMenu> orderMenuList = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Payments payments;
@@ -62,7 +63,25 @@ public class Order extends Timestamped {
     /**
      * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
      */
+    public void addOrderMenu(OrderMenu orderMenu) {
+        orderMenuList.add(orderMenu);
+        orderMenu.updateOrder(this); // 반대편 연관관계 설정
+    }
 
+    public void removeOrderMenu(OrderMenu orderMenu) {
+        orderMenuList.remove(orderMenu);
+        orderMenu.updateOrder(null); // 반대편 연관관계 해제
+    }
+
+    public void addPayments(Payments payments) {
+        this.payments = payments;
+        payments.updateOrder(this);
+    }
+
+    public void removePayments(Payments payments) {
+        this.payments = null;
+        payments.updateOrder(null);
+    }
 
     /**
      * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
