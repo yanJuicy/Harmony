@@ -58,4 +58,47 @@ public class StoreService {
 
         return new StoreResponseDto(store.getStoreId(), store.getStoreName(), store.getPhoneNumber(), address, categoryNames);
     }
+
+    @Transactional
+    public StoreResponseDto updateStore(UUID storeId, StoreRequestDto storeRequestDto) {
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("StoreId를 찾을 수 없습니다: " + storeId));
+
+        store.updateStoreInfo(
+                storeRequestDto.getStoreName(),
+                storeRequestDto.getPhoneNumber(),
+                new Address(storeRequestDto.getAddress(), storeRequestDto.getDetailAddress(), storeRequestDto.getPostcode())
+        );
+
+        store.clearCategories();
+        List<StoreCategory> updatedCategories = storeRequestDto.getCategoryIds().stream()
+                .map(categoryId -> {
+                    Category category = categoryRepository.findById(categoryId)
+                            .orElseThrow(() -> new IllegalArgumentException("Category not found for ID: " + categoryId));
+                    return StoreCategory.builder()
+                            .store(store)
+                            .category(category)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        store.addCategories(updatedCategories);
+
+        storeRepository.save(store);
+
+        List<String> categoryNames = updatedCategories.stream()
+                .map(storeCategory -> storeCategory.getCategory().getCategoryName())
+                .collect(Collectors.toList());
+
+        return new StoreResponseDto(store.getStoreId(), store.getStoreName(), store.getPhoneNumber(), store.getAddress(), categoryNames);
+    }
+
+    @Transactional
+    public void deleteStore(UUID storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
+
+        storeRepository.delete(store);
+    }
+
 }

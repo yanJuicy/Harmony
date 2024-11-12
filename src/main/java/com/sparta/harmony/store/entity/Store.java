@@ -42,4 +42,14 @@ public class Store extends Timestamped {
     public void addCategories(List<StoreCategory> storeCategories) {
         this.storeCategories.addAll(storeCategories);
     }
+
+    public void updateStoreInfo(String storeName, String phoneNumber, Address address) {
+        this.storeName = storeName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+    }
+
+    public void clearCategories() {  // StoreCategory 업데이트에 사용 (기존 StoreCategory 목록 초기화)
+        this.storeCategories.clear();
+    }
 }
