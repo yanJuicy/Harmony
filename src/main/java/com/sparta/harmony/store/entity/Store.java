@@ -3,10 +3,7 @@ package com.sparta.harmony.store.entity;
 import com.sparta.harmony.order.entity.Timestamped;
 import com.sparta.harmony.user.entity.Address;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,5 +37,9 @@ public class Store extends Timestamped {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.storeCategories = storeCategories;
+    }
+
+    public void addCategories(List<StoreCategory> storeCategories) {
+        this.storeCategories.addAll(storeCategories);
     }
 }
