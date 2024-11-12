@@ -26,6 +26,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+
+!**/src/main/resources/application-local.properties
+!**/src/test/java/com/sparta/harmony/order/**
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
