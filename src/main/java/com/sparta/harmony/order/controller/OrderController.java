@@ -23,9 +23,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto, User user) {
 
-        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto);
+        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, user);
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.CREATED,
@@ -34,9 +34,9 @@ public class OrderController {
     }
 
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> cancelOrder(@PathVariable UUID orderId) {
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> cancelOrder(@PathVariable UUID orderId, User user) {
 
-        OrderResponseDto orderResponseDto = orderService.softDeleteOrder(orderId);
+        OrderResponseDto orderResponseDto = orderService.softDeleteOrder(orderId, user);
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.OK,

@@ -31,9 +31,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
 
-    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto
-//            , User user
-    ) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, User user) {
 
         Address address;
 
@@ -42,17 +40,17 @@ public class OrderService {
         address = Address.builder().postcode(orderRequestDto.getPostcode()).address(orderRequestDto.getAddress()).detailAddress(orderRequestDto.getDetailAddress()).build();
 
 
-//        User user = getTestUser();
+//        User testUser = getTestUser();
 
         // 총 금액
         int total_price = getTotalPrice(orderRequestDto);
 
         Order order = Order.builder().orderStatus(OrderStatusEnum.PENDING).orderType(orderRequestDto.getOrderType()).specialRequest(orderRequestDto.getSpecialRequest()).totalAmount(total_price).address(address)
-//                .user(user)
+//                .user(testUser)
                 .store(storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 음식점이 없습니다."))).build();
 
         Payments payments = Payments.builder()
-//                .user(user)
+//                .user(testUser)
                 .order(order)
                 .amount(total_price).build();
 
@@ -64,15 +62,15 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto softDeleteOrder(UUID orderId) {
+    public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
 
         // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
-//        User user = getTestUser();
+//        User testUser = getTestUser();
 
-//        order.softDelete(user.getEmail());
+//        order.softDelete(testUser.getEmail());
         orderRepository.save(order);
 
         OrderResponseDto orderResponseDto = OrderResponseDto.builder()
