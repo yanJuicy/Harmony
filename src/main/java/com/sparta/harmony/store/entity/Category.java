@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Category extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID storeCategoryId;
+    private UUID categoryId;
 
     @Column(nullable = false)
     private String categoryName;
