@@ -56,8 +56,8 @@ public class Order extends Timestamped {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderMenu> orderMenuList;
 
-
-
+    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Payments payments;
 
     /**
      * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
@@ -71,6 +71,7 @@ public class Order extends Timestamped {
     public Order(User user, Store store, OrderStatusEnum orderStatus,
                  OrderTypeEnum orderType, String specialRequest,
                  int totalAmount, Address address, List<OrderMenu> orderMenuList) {
+
         this.user = user;
         this.store = store;
         this.orderStatus = orderStatus;
