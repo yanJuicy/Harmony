@@ -37,6 +37,15 @@ public class OrderService {
                 .build();
 
 
+//        User user = User.builder()
+//                .userId(UUID.fromString("fe40d0de-0d5f-4b22-ad45-922d6088b722"))
+//                .password("123")
+//                .userName("test")
+//                .email("test@test.com")
+//                .role(Role.USER)
+//                .address(address)
+//                .build();
+
         // 총 금액
         int total_price = 0;
 

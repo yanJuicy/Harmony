@@ -12,15 +12,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderResponseDto {
 
-    @NotNull
     @JsonProperty("order_id")
     private UUID orderId;
 
-    @NotNull
     @JsonProperty("store_name")
     private String storeName;
 
-    @NotNull
     @JsonProperty("total_amount")
     private int totalAmount;
 

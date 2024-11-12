@@ -15,15 +15,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderRequestDto {
 
-    @NotNull(message = "음식점 ID는 필수입니다.")
     @JsonProperty("store_id")
     private UUID storeId;
 
-    @NotNull(message = "메뉴 ID는 필수입니다.")
     @JsonProperty("data")
     private List<OrderMenuRequestDto> orderMenuList = new ArrayList<>();
 
-    @NotNull(message = "포장 유형은 필수입니다.")
     @JsonProperty("order_type")
     private OrderTypeEnum orderType;
 
