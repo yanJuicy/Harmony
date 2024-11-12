@@ -29,6 +29,10 @@ public class OrderResponseDto {
     @JsonProperty("total_amount")
     private int totalAmount;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("payments_id")
+    private UUID paymentsId;
+
     public OrderResponseDto(Order order) {
         this.orderId = order.getOrderId();
         this.storeName = order.getStore().getStoreName();
