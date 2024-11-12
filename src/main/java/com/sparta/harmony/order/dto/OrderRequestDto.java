@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.order.entity.OrderTypeEnum;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +15,15 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class OrderRequestDto {
 
     @JsonProperty("store_id")
     private UUID storeId;
+
+    @JsonProperty("order_id")
+    private UUID orderId;
 
     @JsonProperty("data")
     private List<OrderMenuRequestDto> orderMenuList = new ArrayList<>();
