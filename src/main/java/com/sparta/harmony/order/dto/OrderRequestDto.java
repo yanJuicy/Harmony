@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.order.entity.OrderTypeEnum;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,17 +15,19 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class OrderRequestDto {
 
-    @NotNull(message = "음식점 ID는 필수입니다.")
     @JsonProperty("store_id")
     private UUID storeId;
 
-    @NotNull(message = "메뉴 ID는 필수입니다.")
+    @JsonProperty("order_id")
+    private UUID orderId;
+
     @JsonProperty("data")
     private List<OrderMenuRequestDto> orderMenuList = new ArrayList<>();
 
-    @NotNull(message = "포장 유형은 필수입니다.")
     @JsonProperty("order_type")
     private OrderTypeEnum orderType;
 
