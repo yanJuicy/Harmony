@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Review extends Timestamped {
 
     @Id
-    @Column(name = "review_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +45,11 @@ public class Review extends Timestamped {
         this.order = order;
         this.store = store;
         this.user = user;
+        this.comment = comment;
+        this.rating = rating;
+    }
+
+    public void updateReview(String comment, int rating) {
         this.comment = comment;
         this.rating = rating;
     }
