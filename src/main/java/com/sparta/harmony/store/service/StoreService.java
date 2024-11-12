@@ -24,6 +24,18 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
 
+
+    public List<StoreResponseDto> getAllStores() {
+        List<Store> stores = storeRepository.findAll();
+
+        return stores.stream()
+                .map(store -> new StoreResponseDto(store.getStoreId(), store.getStoreName(), store.getPhoneNumber(),
+                        store.getAddress(), store.getStoreCategories().stream()
+                        .map(storeCategory -> storeCategory.getCategory().getCategoryName())
+                        .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public StoreResponseDto createStore(StoreRequestDto storeRequestDto) {
 

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,6 +18,11 @@ public class StoreController {
 
     @Autowired
     private StoreService storeService;
+
+    @GetMapping
+    public List<StoreResponseDto> getAllStores() {
+        return storeService.getAllStores();
+    }
 
     @PostMapping
     public StoreResponseDto createStore(@RequestBody StoreRequestDto storeRequestDto) {
