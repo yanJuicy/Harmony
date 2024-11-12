@@ -5,7 +5,6 @@ import com.sparta.harmony.store.dto.CategoryResponseDto;
 import com.sparta.harmony.store.entity.Category;
 import com.sparta.harmony.store.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,12 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto) {
+
         Category category = new Category(categoryRequestDto.getCategoryName());
 
         Category savedCategory = categoryRepository.save(category);
 
-        return new CategoryResponseDto(savedCategory.getStoreCategoryId(), savedCategory.getCategoryName()
+        return new CategoryResponseDto(savedCategory.getCategoryId(), savedCategory.getCategoryName()
         );
     }
 
@@ -37,7 +37,7 @@ public class CategoryService {
 
         categoryRepository.save(category);
 
-        return new CategoryResponseDto(category.getStoreCategoryId(), category.getCategoryName());
+        return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName());
     }
 
     @Transactional
