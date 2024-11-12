@@ -1,6 +1,7 @@
 package com.sparta.harmony.user.entity;
 
 import com.sparta.harmony.order.entity.Order;
+import com.sparta.harmony.order.entity.Payments;
 import com.sparta.harmony.order.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,11 +38,15 @@ public class User extends Timestamped {
     private Address address;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> orders;
+    private List<Order> order;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Payments> payments;
 
     @Builder
     public User(UUID userId, String password, String userName,
                 String email, Role role, Address address) {
+
         this.userId = userId;
         this.password = password;
         this.userName = userName;
