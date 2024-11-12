@@ -25,7 +25,8 @@ public class StoreCategory {
     private Category category;
 
     @Builder
-    public StoreCategory(Store store, Category category) {
+    public StoreCategory(UUID storeCategoryId, Store store, Category category) {
+        this.storeCategoryId = storeCategoryId;
         this.store = store;
         this.category = category;
     }
