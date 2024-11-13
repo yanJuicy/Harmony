@@ -8,6 +8,7 @@ import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.order.entity.OrderMenu;
 import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.entity.Payments;
+import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderMenuRepository;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.order.repository.PaymentsRepository;
@@ -91,7 +92,7 @@ public class OrderService {
 
         // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
 
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
 
 //        User testUser = getTestUser();
 
@@ -144,10 +145,10 @@ public class OrderService {
 
         if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
             order = orderRepository.findByOrderIdAndUserAndDeletedFalse(orderId, user).orElseThrow(()
-                    -> new IllegalArgumentException("고객님의 주문 내용이 있는지 확인해주세요."));
+                    -> new OrderNotFoundException("고객님의 주문 내용이 있는지 확인해주세요."));
         } else {
             order = orderRepository.findByOrderIdAndDeletedFalse(orderId).orElseThrow(()
-                    -> new IllegalArgumentException("없는 주문 번호 입니다."));
+                    -> new OrderNotFoundException("없는 주문 번호 입니다."));
         }
 
         return new OrderResponseDto(order, user);
