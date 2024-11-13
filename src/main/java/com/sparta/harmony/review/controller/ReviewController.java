@@ -24,12 +24,14 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    // 특정 가게에 대한 리뷰 조회
+    // 음식점 ID로 해당 음식점의 리뷰 리스트 조회
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<List<ReviewResponseDto>> getReviewsByStore(@PathVariable UUID storeId) {
-        return ResponseEntity.ok(reviewService.getReviewsByStore(storeId));
+    public ResponseEntity<List<ReviewResponseDto>> getReviewsByStoreId(@PathVariable UUID storeId) {
+        List<ReviewResponseDto> reviews = reviewService.getReviewsByStoreId(storeId);
+        return ResponseEntity.status(HttpStatus.OK).body(reviews);
     }
 
+    // 특정 사용자에 대한 리뷰 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewResponseDto>> getReviewsByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(reviewService.getReviewsByUser(userId));

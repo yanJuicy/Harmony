@@ -45,6 +45,13 @@ public class Review extends Timestamped {
         this.order = order;
         this.store = store;
         this.comment = comment;
+        setRating(rating);
+    }
+
+    public void setRating(int rating){
+        if(rating < 1 || rating > 5){
+            throw new IllegalArgumentException("평점은 1에서 5 사이여야 합니다.");
+        }
         this.rating = rating;
     }
 

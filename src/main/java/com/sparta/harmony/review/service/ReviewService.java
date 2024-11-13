@@ -27,13 +27,16 @@ public class ReviewService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
 
-    //리뷰 작성
+    //리뷰 생성
     @Transactional
     public ReviewResponseDto createReview(ReviewRequestDto requestDto) {
         User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid User ID"));
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Order ID"));
+        if(!order.getUser().equals(user)){
+            throw new IllegalArgumentException("이 주문은 해당 사용자에게 속하지 않습니다.");
+        }
         Store store = storeRepository.findById(requestDto.getStoreId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Store ID"));
 
@@ -50,9 +53,14 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
-    // 특정 가게 대한 리뷰 조회
-    public List<ReviewResponseDto> getReviewsByStore(UUID storeId) {
-        List<Review> reviews = reviewRepository.findByStore_StoreId(storeId);
+    // 음식점 고유 ID로 리뷰 리스트 조회
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> getReviewsByStoreId(UUID storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("음식점 정보를 찾을 수 없습니다"));
+
+        List<Review> reviews = reviewRepository.findByStore(store);
+
         return reviews.stream()
                 .map(ReviewResponseDto::new)
                 .collect(Collectors.toList());
