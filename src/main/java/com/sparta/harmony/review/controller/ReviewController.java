@@ -3,6 +3,7 @@ package com.sparta.harmony.review.controller;
 import com.sparta.harmony.review.dto.ReviewRequestDto;
 import com.sparta.harmony.review.dto.ReviewResponseDto;
 import com.sparta.harmony.review.service.ReviewService;
+import com.sparta.harmony.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,8 @@ public class ReviewController {
     // 특정 사용자에 대한 리뷰 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReviewResponseDto>> getReviewsByUser(@PathVariable UUID userId) {
-        return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
+        List<ReviewResponseDto> reviews = reviewService.getReviewsByUser(userId);
+        return ResponseEntity.ok(reviews);
     }
 
     // 특정 주문에 대한 리뷰 조회
@@ -59,4 +61,12 @@ public class ReviewController {
         reviewService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
     }
+
+//    @DeleteMapping("/{reviewId}")
+//    public ResponseEntity<String> deleteReview(@PathVariable UUID reviewId, @AuthenticationPrincipal User user) {
+//        String deletedBy = user != null ? user.getUserName() : "system";  // 삭제한 사용자 정보
+//
+//        reviewService.deleteReview(reviewId, deletedBy);
+//        return ResponseEntity.status(HttpStatus.OK).body("Review hidden successfully");
+//    }
 }
