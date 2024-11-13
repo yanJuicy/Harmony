@@ -58,4 +58,8 @@ public class Payments extends Timestamped {
     public void updateOrder(Order order) {
         this.order = order;
     }
+
+    public void updateUser(User user) {
+        this.user = user;
+    }
 }
