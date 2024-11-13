@@ -47,7 +47,7 @@ public class OrderService {
         address = Address.builder().postcode(orderRequestDto.getPostcode()).address(orderRequestDto.getAddress()).detailAddress(orderRequestDto.getDetailAddress()).build();
 
 
-        User testUser = getTestUser();
+//        User testUser = getTestUser();
 
         // 총 금액
         int total_price = getTotalPrice(orderRequestDto);
@@ -57,14 +57,14 @@ public class OrderService {
                 .orderType(orderRequestDto.getOrderType())
                 .specialRequest(orderRequestDto.getSpecialRequest())
                 .totalAmount(total_price).address(address)
-                .user(testUser)
+//                .user(testUser)
                 // 초기화 안해주면 null값 들어가서 값을 못가져옴. 반드시 초기화 필요
                 .orderMenuList(new ArrayList<>())
                 .store(storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 음식점이 없습니다.")))
                 .build();
 
         Payments payments = Payments.builder()
-                .user(testUser)
+//                .user(testUser)
                 .order(order)
                 .amount(total_price).build();
 
@@ -120,15 +120,15 @@ public class OrderService {
         Page<Order> orderList;
 
         if (userRoleEnum == Role.USER) {
-            orderList = orderRepository.findAllByUser(user, pageable);
+            orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
         } else if (userRoleEnum == Role.OWNER) {
             Store store = Store.builder()
                     .storeId(orderRequestDto.getStoreId())
                     .build();
 
-            orderList = orderRepository.findAllByStore(store, pageable);
+            orderList = orderRepository.findAllByStoreAndDeletedByFalse(store, pageable);
         } else {
-            orderList = orderRepository.findAll(pageable);
+            orderList = orderRepository.findAllByDeletedFalse(pageable);
         }
 
         return orderList.map(OrderResponseDto::new);

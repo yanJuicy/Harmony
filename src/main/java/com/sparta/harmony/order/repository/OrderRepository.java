@@ -13,5 +13,11 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAllByUser(User user, Pageable pageable);
 
+    Page<Order> findAllByUserAndDeletedByFalse(User user, Pageable pageable);
+
     Page<Order> findAllByStore(Store store, Pageable pageable);
+
+    Page<Order> findAllByStoreAndDeletedByFalse(Store store, Pageable pageable);
+
+    Page<Order> findAllByDeletedFalse(Pageable pageable);
 }
