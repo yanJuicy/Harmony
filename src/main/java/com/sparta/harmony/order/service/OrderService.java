@@ -17,6 +17,7 @@ import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
 import com.sparta.harmony.user.entity.Role;
 import com.sparta.harmony.user.entity.User;
+import com.sparta.harmony.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,72 +39,44 @@ public class OrderService {
     private final PaymentsRepository paymentsRepository;
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final UserRepository userRepository;
 
-    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, User user) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
+                                        // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
+                                        UUID userId) {
+        // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
+        User userInfo = userRepository.findById(userId).orElseThrow(()
+                -> new IllegalArgumentException("유저 정보를 확인해 주세요"));
 
         Address address;
+        // address 값이 따로 안들어오면 user 정보에 있는 기본 주소로 받아오도록 설정하기
+        if ((orderRequestDto.getAddress().isEmpty())
+                && (orderRequestDto.getDetailAddress().isEmpty())) {
+            // 주소지가 따로 입력되지 않은 경우
+            Address basicUserAddress = userInfo.getAddress();
 
-        // 유저의 권한에 따른 작업 및 address 값이 따로 안들어오면 user 정보에 있는 기본 주소로 받아오도록 설정하기
-
-        address = Address.builder().postcode(orderRequestDto.getPostcode()).address(orderRequestDto.getAddress()).detailAddress(orderRequestDto.getDetailAddress()).build();
-
-
-//        User testUser = getTestUser();
-
-        // 총 금액
-        int total_price = getTotalPrice(orderRequestDto);
-
-        Order order = Order.builder()
-                .orderStatus(OrderStatusEnum.PENDING)
-                .orderType(orderRequestDto.getOrderType())
-                .specialRequest(orderRequestDto.getSpecialRequest())
-                .totalAmount(total_price).address(address)
-//                .user(testUser)
-                // 초기화 안해주면 null값 들어가서 값을 못가져옴. 반드시 초기화 필요
-                .orderMenuList(new ArrayList<>())
-                .store(storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 음식점이 없습니다.")))
-                .build();
-
-        Payments payments = Payments.builder()
-//                .user(testUser)
-                .order(order)
-                .amount(total_price).build();
-
-        order.addPayments(payments);
-
-        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
-            OrderMenu orderMenu = OrderMenu.builder()
-                    .quantity(menuItem.getQuantity())
-                    .order(order)
-                    .menu(menuRepository.findById(menuItem.getMenuId()).orElseThrow(() -> new IllegalArgumentException("해당 주문 메뉴 ID는 없습니다.")))
-                    .build();
-            order.addOrderMenu(orderMenu);
+            address = buildAddressUseAddress(basicUserAddress);
+        } else {
+            // 주소지가 입력된 경우
+            address = buildAddressUseDto(orderRequestDto);
         }
 
-        orderRepository.save(order);
+        int total_price = getTotalPrice(orderRequestDto);
 
+        Order order = buildOrder(orderRequestDto, address, userInfo, total_price);
+
+        Payments payments = buildPayments(userInfo, total_price, order);
+
+        buildMenuList(orderRequestDto, order);
+
+        order.addPayments(payments);
+        userInfo.addOrder(order);
+        userInfo.addPayments(payments);
+
+        orderRepository.save(order);
 
         return new OrderResponseDto(order);
 
-    }
-
-    @Transactional
-    public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
-
-        // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
-
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
-
-//        User testUser = getTestUser();
-
-//        order.softDelete(testUser.getEmail());
-        orderRepository.save(order);
-
-        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
-                .orderId(orderId)
-                .build();
-
-        return orderResponseDto;
     }
 
     @Transactional(readOnly = true)
@@ -154,6 +127,73 @@ public class OrderService {
         return new OrderResponseDto(order, user);
     }
 
+    @Transactional
+    public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
+
+        // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
+
+//        User testUser = getTestUser();
+
+//        order.softDelete(testUser.getEmail());
+        orderRepository.save(order);
+
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+                .orderId(orderId)
+                .build();
+
+        return orderResponseDto;
+    }
+
+    private void buildMenuList(OrderRequestDto orderRequestDto, Order order) {
+        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
+            OrderMenu orderMenu = OrderMenu.builder()
+                    .quantity(menuItem.getQuantity())
+                    .order(order)
+                    .menu(menuRepository.findById(menuItem.getMenuId()).orElseThrow(() -> new IllegalArgumentException("해당 주문 메뉴 ID는 없습니다.")))
+                    .build();
+            order.addOrderMenu(orderMenu);
+        }
+    }
+
+    private Address buildAddressUseAddress(Address basicUserAddress) {
+        Address address;
+        address = Address.builder()
+                .postcode(basicUserAddress.getPostcode())
+                .address(basicUserAddress.getAddress())
+                .detailAddress(basicUserAddress.getDetailAddress())
+                .build();
+        return address;
+    }
+
+    private Address buildAddressUseDto(OrderRequestDto orderRequestDto) {
+        Address address;
+        address = Address.builder().postcode(orderRequestDto.getPostcode()).address(orderRequestDto.getAddress()).detailAddress(orderRequestDto.getDetailAddress()).build();
+        return address;
+    }
+
+    private Payments buildPayments(User userInfo, int total_price, Order order) {
+        Payments payments = Payments.builder()
+                .user(userInfo)
+                .order(order)
+                .amount(total_price).build();
+        return payments;
+    }
+
+    private Order buildOrder(OrderRequestDto orderRequestDto, Address address, User userInfo, int total_price) {
+        Order order = Order.builder()
+                .orderStatus(OrderStatusEnum.PENDING)
+                .orderType(orderRequestDto.getOrderType())
+                .specialRequest(orderRequestDto.getSpecialRequest())
+                .totalAmount(total_price).address(address)
+                .user(userInfo)
+                // 초기화 안해주면 null값 들어가서 값을 못가져옴. 반드시 초기화 필요
+                .orderMenuList(new ArrayList<>())
+                .store(storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 음식점이 없습니다.")))
+                .build();
+        return order;
+    }
 
 
     private int getTotalPrice(OrderRequestDto orderRequestDto) {
@@ -167,16 +207,4 @@ public class OrderService {
         }
         return total_price;
     }
-
-    private User getTestUser() {
-        return User.builder()
-                .userId(UUID.fromString("fd9e3dac-18f1-4362-9914-f2856b9c7c9a"))
-                .password("123")
-                .userName("test")
-                .email("test@test.com")
-                .role(Role.USER)
-                .build();
-    }
-
-
 }
