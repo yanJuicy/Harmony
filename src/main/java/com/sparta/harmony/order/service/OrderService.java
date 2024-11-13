@@ -18,7 +18,6 @@ import com.sparta.harmony.user.entity.Address;
 import com.sparta.harmony.user.entity.Role;
 import com.sparta.harmony.user.entity.User;
 import com.sparta.harmony.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
