@@ -98,4 +98,15 @@ public class ReviewService {
 
         reviewRepository.delete(review);
     }
+
+//    @Transactional
+//    public void deleteReview(UUID reviewId, String deletedBy) {
+//        // 리뷰를 찾아서 삭제 처리 (실제로는 삭제하지 않고 숨김 처리)
+//        Review review = reviewRepository.findById(reviewId)
+//                .orElseThrow(() -> new IllegalArgumentException("Review not found with id: " + reviewId));
+//
+//        review.deleteReview(deletedBy);  // Timestamped의 softDelete 호출
+//
+//        reviewRepository.save(review);  // 업데이트된 리뷰 저장
+//    }
 }

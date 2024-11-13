@@ -59,4 +59,8 @@ public class Review extends Timestamped {
         this.comment = comment;
         this.rating = rating;
     }
+
+//    public void deleteReview(String deleteBy){
+//        this.softDelete(deleteBy);
+//    }
 }

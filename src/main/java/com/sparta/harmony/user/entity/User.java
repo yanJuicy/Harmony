@@ -3,6 +3,7 @@ package com.sparta.harmony.user.entity;
 import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.order.entity.Payments;
 import com.sparta.harmony.order.entity.Timestamped;
+import com.sparta.harmony.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,6 +45,9 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payments> paymentsList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
+
     public void addOrder(Order order) {
         orderList.add(order);
         order.updateUser(this);
@@ -64,5 +68,20 @@ public class User extends Timestamped {
         this.email = email;
         this.role = role;
         this.address = address;
+    }
+
+    public void updateUserInfo(String userName, String password, Role role, Address address) {
+        if (userName != null && !userName.isBlank()) {
+            this.userName = userName;
+        }
+        if (password != null && !password.isBlank()) {
+            this.password = password;
+        }
+        if (role != null) {
+            this.role = role;
+        }
+        if (address != null) {
+            this.address = address;
+        }
     }
 }
