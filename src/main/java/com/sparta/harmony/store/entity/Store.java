@@ -1,6 +1,7 @@
 package com.sparta.harmony.store.entity;
 
 import com.sparta.harmony.order.entity.Timestamped;
+import com.sparta.harmony.review.entity.Review;
 import com.sparta.harmony.user.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,14 +30,19 @@ public class Store extends Timestamped {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreCategory> storeCategories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
+
     @Builder
     public Store(String storeName, String phoneNumber, Address address,
-                 UUID storeId, List<StoreCategory> storeCategories) {
+                 UUID storeId, List<StoreCategory> storeCategories,List<Review> reviews) {
         this.storeId = storeId;
         this.storeName = storeName;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.storeCategories = storeCategories;
+        this.reviews = reviews;
     }
 
     public void addCategories(List<StoreCategory> storeCategories) {
