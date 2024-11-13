@@ -134,6 +134,27 @@ public class OrderService {
         return orderList.map(OrderResponseDto::new);
     }
 
+    public OrderResponseDto getOrderByOrderId(UUID orderId, User user) {
+
+        // orderId를 가지고 와서 해당 주문에 대한 상세 조회.
+        // customer, owner의 경우 해당 유저만이 자신의 주문을 확인 가능. 단, manager, master의 경우 모둔 주문 상세조회
+
+        Role userRoleEnum = user.getRole();
+        Order order;
+
+        if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
+            order = orderRepository.findByOrderIdAndUserAndDeletedFalse(orderId, user).orElseThrow(()
+                    -> new IllegalArgumentException("고객님의 주문 내용이 있는지 확인해주세요."));
+        } else {
+            order = orderRepository.findByOrderIdAndDeletedFalse(orderId).orElseThrow(()
+                    -> new IllegalArgumentException("없는 주문 번호 입니다."));
+        }
+
+        return new OrderResponseDto(order, user);
+    }
+
+
+
     private int getTotalPrice(OrderRequestDto orderRequestDto) {
         int total_price = 0;
 
