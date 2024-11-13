@@ -105,4 +105,7 @@ public class Order extends Timestamped {
     /**
      * 서비스 메소드 - 외부에서 엔티티를 수정할 메소드를 정의합니다. (단일 책임을 가지도록 주의합니다.)
      */
+    public void updateUser(User user) {
+        this.user = user;
+    }
 }

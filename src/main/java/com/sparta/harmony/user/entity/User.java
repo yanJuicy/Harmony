@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,10 +39,20 @@ public class User extends Timestamped {
     private Address address;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> order;
+    private List<Order> orderList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Payments> payments;
+    private List<Payments> paymentsList = new ArrayList<>();
+
+    public void addOrder(Order order) {
+        orderList.add(order);
+        order.updateUser(this);
+    }
+
+    public void addPayments(Payments payments) {
+        paymentsList.add(payments);
+        payments.updateUser(this);
+    }
 
     @Builder
     public User(UUID userId, String password, String userName,
