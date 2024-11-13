@@ -1,0 +1,29 @@
+### 주문 단건 조회
+GET http://localhost:8080/api/orders/d8480c2c-fae2-4726-b15c-80d823b34466
+
+### 주문 전체 조회
+localhost:8080/api/orders?page=1&size=10&sort_by=orderStatus&is_asc=true
+
+### 주문 등록
+POST http://localhost:8080/api/orders?user_id=fd9e3dac-18f1-4362-9914-f2856b9c7c9a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "store_id" : "e6a3d2ed-9c57-485a-9ed8-3e42e9207ab9",
+  "data" : [
+    {
+      "menu_id" : "7e5d621d-48db-440d-b079-466adab6350a",
+      "quantity" : 15
+    },
+    {
+      "menu_id" : "0fa11273-6236-4a15-bcde-f52477bccc29",
+      "quantity" : 17
+    }
+  ],
+  "order_type" : "DELIVERY",
+  "postcode" : "",
+  "address" : "",
+  "detail_address" : "",
+  "special_request" : "퇴근!!"
+}
