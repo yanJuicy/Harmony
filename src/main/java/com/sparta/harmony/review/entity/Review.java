@@ -40,11 +40,10 @@ public class Review extends Timestamped {
     private int rating;
 
     @Builder
-    public Review(UUID reviewId, Order order, Store store, User user, String comment, int rating) {
-        this.reviewId = reviewId;
+    public Review(Order order, Store store, User user, String comment, int rating) {
+        this.user = user;
         this.order = order;
         this.store = store;
-        this.user = user;
         this.comment = comment;
         this.rating = rating;
     }

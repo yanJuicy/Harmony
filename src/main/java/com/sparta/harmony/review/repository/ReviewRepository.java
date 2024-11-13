@@ -13,8 +13,14 @@ public interface ReviewRepository  extends JpaRepository<Review, UUID> {
 
     List<Review> findByStore_StoreId(UUID storeId);
 
+    List<Review> findByUser_UserId(UUID userId);
+
+    Review findByOrder_OrderId(UUID orderId);
+
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.store.storeId = :storeId")
     Optional<Double> findAverageRatingByStoreId(UUID storeId);
 
     List<Review> findByStore(Store store);
+
+
 }
