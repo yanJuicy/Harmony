@@ -83,6 +83,9 @@ public class OrderResponseDto {
         this.orderMenuList = order.getOrderMenuList().stream()
                 .map(OrderResponseDataDto::new)
                 .toList();
+        this.postcode = order.getAddress().getPostcode();
+        this.address = order.getAddress().getAddress();
+        this.detailAddress = order.getAddress().getDetailAddress();
         this.createdAt = order.getCreatedAt();
     }
 

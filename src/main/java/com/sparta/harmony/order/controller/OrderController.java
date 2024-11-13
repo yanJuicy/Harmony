@@ -24,9 +24,11 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto, User user) {
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto,
+                                                                        // security 적용 후 jwt 인증객체 받아오은걸로 변경 예정
+                                                                        @RequestParam(value = "user_id") UUID userId) {
 
-        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, user);
+        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.CREATED,
