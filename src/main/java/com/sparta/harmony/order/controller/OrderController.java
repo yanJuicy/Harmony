@@ -48,7 +48,7 @@ public class OrderController {
 
     @GetMapping("/orders")
     public ResponseEntity<ApiResponseDto<OrderResponseDto>> getOrders(
-            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "orderStatus") String sortBy,
             @RequestParam(value = "is_asc", defaultValue = "true") boolean isAsc,
@@ -69,7 +69,17 @@ public class OrderController {
                 "조회가 완료되었습니다.",
                 orderResponseDto
         );
+    }
 
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> getOrderByOrderId(@PathVariable UUID orderId, User user) {
+
+        OrderResponseDto orderResponseDto = orderService.getOrderByOrderId(orderId, user);
+
+        return new SuccessResponseHandler().handleSuccess(
+                HttpStatus.OK,
+                "조회에 성공하였습니다.",
+                List.of(orderResponseDto));
     }
 
 }

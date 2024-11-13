@@ -14,7 +14,6 @@ public class ApiResponseDto<T> {
     private int status;
     private String message;
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int page;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
