@@ -1,6 +1,7 @@
 package com.sparta.harmony.order.service;
 
 import com.sparta.harmony.menu.repository.MenuRepository;
+import com.sparta.harmony.order.dto.OrderDetailResponseDto;
 import com.sparta.harmony.order.dto.OrderRequestDataDto;
 import com.sparta.harmony.order.dto.OrderRequestDto;
 import com.sparta.harmony.order.dto.OrderResponseDto;
@@ -40,15 +41,16 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
 
+    // 주문 생성
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
                                         // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
                                         UUID userId) {
-        // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
+
         User userInfo = userRepository.findById(userId).orElseThrow(()
                 -> new IllegalArgumentException("유저 정보를 확인해 주세요"));
 
         Address address;
-        // address 값이 따로 안들어오면 user 정보에 있는 기본 주소로 받아오도록 설정하기
+
         if ((orderRequestDto.getAddress().isEmpty())
                 && (orderRequestDto.getDetailAddress().isEmpty())) {
             // 주소지가 따로 입력되지 않은 경우
@@ -61,11 +63,8 @@ public class OrderService {
         }
 
         int total_price = getTotalPrice(orderRequestDto);
-
         Order order = buildOrder(orderRequestDto, address, userInfo, total_price);
-
         Payments payments = buildPayments(userInfo, total_price, order);
-
         buildMenuList(orderRequestDto, order);
 
         order.addPayments(payments);
@@ -78,6 +77,7 @@ public class OrderService {
 
     }
 
+    // 주문 조회
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> getOrders(User user, OrderRequestDto orderRequestDto, int page, int size,
                                             String sortBy, boolean isAsc) {
@@ -98,7 +98,6 @@ public class OrderService {
             Store store = Store.builder()
                     .storeId(orderRequestDto.getStoreId())
                     .build();
-
             orderList = orderRepository.findAllByStoreAndDeletedByFalse(store, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
@@ -107,10 +106,8 @@ public class OrderService {
         return orderList.map(OrderResponseDto::new);
     }
 
-    public OrderResponseDto getOrderByOrderId(UUID orderId, User user) {
-
-        // orderId를 가지고 와서 해당 주문에 대한 상세 조회.
-        // customer, owner의 경우 해당 유저만이 자신의 주문을 확인 가능. 단, manager, master의 경우 모둔 주문 상세조회
+    // 주문 상세 조회
+    public OrderDetailResponseDto getOrderByOrderId(UUID orderId, User user) {
 
         Role userRoleEnum = user.getRole();
         Order order;
@@ -123,9 +120,10 @@ public class OrderService {
                     -> new OrderNotFoundException("없는 주문 번호 입니다."));
         }
 
-        return new OrderResponseDto(order, user);
+        return new OrderDetailResponseDto(order, user);
     }
 
+    // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
 
@@ -133,9 +131,6 @@ public class OrderService {
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
 
-//        User testUser = getTestUser();
-
-//        order.softDelete(testUser.getEmail());
         orderRepository.save(order);
 
         OrderResponseDto orderResponseDto = OrderResponseDto.builder()
