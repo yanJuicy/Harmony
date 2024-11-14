@@ -110,4 +110,8 @@ public class Order extends Timestamped {
     public void updateUser(User user) {
         this.user = user;
     }
+
+    public void updateOrderStatus(OrderStatusEnum orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

@@ -36,6 +36,7 @@ public class OrderService {
     private final UserRepository userRepository;
 
     // 주문 생성. user 이상 사용 가능
+    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
                                         // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
                                         UUID userId) {
@@ -127,6 +128,16 @@ public class OrderService {
         return new OrderDetailResponseDto(order);
     }
 
+    // 주문 상태 update. owner 이상 사용자만 이용 가능
+    @Transactional
+    public OrderDetailResponseDto updateOrderStatus(UUID orderId, OrderRequestDto orderRequestDto) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new IllegalArgumentException("없는 주문 번호입니다."));
+
+        order.updateOrderStatus(orderRequestDto.getOrderStatus());
+        return new OrderDetailResponseDto(order);
+    }
+
     // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
@@ -156,6 +167,7 @@ public class OrderService {
         }
         softDeleteOrderAndDeleteOrderMenu(order, email);
 
+        order.updateOrderStatus(OrderStatusEnum.CANCELED);
         orderRepository.save(order);
 
         return OrderResponseDto.builder()

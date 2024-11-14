@@ -1,6 +1,7 @@
 package com.sparta.harmony.order.controller;
 
 import com.sparta.harmony.order.dto.*;
+import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.OrderService;
 import com.sparta.harmony.user.entity.User;
@@ -61,7 +62,7 @@ public class OrderController {
         );
     }
 
-    // customer 이상 사용가능
+    // user 이상 사용가능
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> getOrderByOrderId(@PathVariable UUID orderId, User user) {
         OrderDetailResponseDto orderDetailResponseDto = orderService.getOrderByOrderId(orderId, user);
@@ -80,14 +81,27 @@ public class OrderController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "is_asc", defaultValue = "false") boolean isAsc) {
-        Page<OrderResponseDto> orderResponseDto = orderService.getOrdersByStoreId(storeId, page-1, size, sortBy, isAsc);
+        Page<OrderResponseDto> orderResponseDto = orderService.getOrdersByStoreId(storeId, page - 1, size, sortBy, isAsc);
 
         return new SuccessResponseHandler().handlePageSuccess(
                 HttpStatus.OK,
                 "조회에 성공하였습니다.",
                 orderResponseDto
         );
-
     }
 
+    // owner 이상 사용 가능
+    @PutMapping("/orders/{orderId}")
+    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> updateOrderStatus(
+            @PathVariable UUID orderId,
+            @RequestBody OrderRequestDto orderRequestDto
+            ) {
+        OrderDetailResponseDto orderDetailResponseDto = orderService.updateOrderStatus(orderId, orderRequestDto);
+
+        return new SuccessResponseHandler().handleSuccess(
+                HttpStatus.OK,
+                "수정이 완료되었습니다.",
+                orderDetailResponseDto
+        );
+    }
 }
