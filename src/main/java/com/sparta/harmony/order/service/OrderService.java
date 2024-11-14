@@ -5,10 +5,7 @@ import com.sparta.harmony.order.dto.OrderDetailResponseDto;
 import com.sparta.harmony.order.dto.OrderRequestDataDto;
 import com.sparta.harmony.order.dto.OrderRequestDto;
 import com.sparta.harmony.order.dto.OrderResponseDto;
-import com.sparta.harmony.order.entity.Order;
-import com.sparta.harmony.order.entity.OrderMenu;
-import com.sparta.harmony.order.entity.OrderStatusEnum;
-import com.sparta.harmony.order.entity.Payments;
+import com.sparta.harmony.order.entity.*;
 import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
@@ -49,9 +46,18 @@ public class OrderService {
         if ((orderRequestDto.getAddress().isEmpty())
                 && (orderRequestDto.getDetailAddress().isEmpty())) {
             // 주소지가 따로 입력되지 않은 경우
+            if (orderRequestDto.getOrderType() == OrderTypeEnum.TAKEOUT) {
+                UUID storeId = orderRequestDto.getStoreId();
+                Address storeAddress = storeRepository.findById(storeId).orElseThrow(
+                        () -> new IllegalArgumentException("가게 ID를 확인해주세요")).getAddress();
+                
+                address = buildAddressUseAddress(storeAddress);
+            } else {
             Address basicUserAddress = userInfo.getAddress();
 
             address = buildAddressUseAddress(basicUserAddress);
+            }
+
         } else {
             // 주소지가 입력된 경우
             address = buildAddressUseDto(orderRequestDto);
