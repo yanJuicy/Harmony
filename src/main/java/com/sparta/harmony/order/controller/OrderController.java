@@ -23,7 +23,6 @@ public class OrderController {
     public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto,
                                                                         // security 적용 후 jwt 인증객체 받아오은걸로 변경 예정
                                                                         @RequestParam(value = "user_id") UUID userId) {
-
         OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
 
         return new SuccessResponseHandler().handleSuccess(
@@ -34,7 +33,6 @@ public class OrderController {
 
     @DeleteMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponseDto<OrderResponseDto>> cancelOrder(@PathVariable UUID orderId, User user) {
-
         OrderResponseDto orderResponseDto = orderService.softDeleteOrder(orderId, user);
 
         return new SuccessResponseHandler().handleSuccess(
@@ -49,17 +47,9 @@ public class OrderController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "orderStatus") String sortBy,
             @RequestParam(value = "is_asc", defaultValue = "true") boolean isAsc,
-            @RequestParam(value = "order_id", required = false) UUID orderId,
-            @RequestParam(value = "store_id", required = false) UUID storeId,
             User user
     ) {
-
-        OrderRequestDto orderRequestDto = OrderRequestDto.builder()
-                .orderId(orderId)
-                .storeId(storeId)
-                .build();
-
-        Page<OrderResponseDto> orderResponseDto = orderService.getOrders(user, orderRequestDto, page - 1, size, sortBy, isAsc);
+        Page<OrderResponseDto> orderResponseDto = orderService.getOrders(user, page - 1, size, sortBy, isAsc);
 
         return new SuccessResponseHandler().handlePageSuccess(
                 HttpStatus.OK,
@@ -70,13 +60,31 @@ public class OrderController {
 
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<ApiDetailResponseDto<OrderDetailResponseDto>> getOrderByOrderId(@PathVariable UUID orderId, User user) {
-
         OrderDetailResponseDto orderDetailResponseDto = orderService.getOrderByOrderId(orderId, user);
 
         return new SuccessResponseHandler().handleDetailSuccess(
                 HttpStatus.OK,
                 "조회에 성공하였습니다.",
                 orderDetailResponseDto);
+    }
+
+    // owner 이상만 사용 가능
+    @GetMapping("/orders/store/{storeId}")
+    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrderByStoreId(
+            @PathVariable UUID storeId,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort_by", defaultValue = "orderStatus") String sortBy,
+            @RequestParam(value = "is_asc", defaultValue = "true") boolean isAsc) {
+
+        Page<OrderResponseDto> orderResponseDto = orderService.getOrdersByStoreId(storeId, page-1, size, sortBy, isAsc);
+
+        return new SuccessResponseHandler().handlePageSuccess(
+                HttpStatus.OK,
+                "조회에 성공하였습니다.",
+                orderResponseDto
+        );
+
     }
 
 }

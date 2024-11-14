@@ -36,6 +36,15 @@ dependencies {
 
     // swagger 세팅
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
+    // QueryDSL 세팅 (SpringBoot3.0 부터는 jakarta 사용해야함)
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+}
+clean {
+    delete file('src/main/generated')
 }
 
 tasks.named('test') {

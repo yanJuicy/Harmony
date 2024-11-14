@@ -33,7 +33,7 @@ public class OrderDetailResponseDto {
     @JsonProperty("payments_id")
     private UUID paymentsId;
 
-    @JsonProperty("data")
+    @JsonProperty("order_menu_list")
     private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
 
     @JsonProperty("order_date")
