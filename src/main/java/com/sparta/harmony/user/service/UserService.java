@@ -4,6 +4,7 @@ import com.sparta.harmony.user.entity.User;
 import com.sparta.harmony.user.repository.UserRepository;
 import com.sparta.harmony.user.dto.UserRequestDto;
 import com.sparta.harmony.user.dto.UserResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class UserService {
 
     // 유저 생성
     @Transactional
-    public UserResponseDto createUser(UserRequestDto requestDto) {
+    public UserResponseDto createUser(@Valid UserRequestDto requestDto) {
         String encryptedPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = User.builder()
                 .userName(requestDto.getUserName())

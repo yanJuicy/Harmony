@@ -3,6 +3,7 @@ package com.sparta.harmony.user.controller;
 import com.sparta.harmony.user.dto.UserRequestDto;
 import com.sparta.harmony.user.dto.UserResponseDto;
 import com.sparta.harmony.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
 
     // 유저 생성
     @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto requestDto) {
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto requestDto) {
         UserResponseDto responseDto = userService.createUser(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -41,7 +42,7 @@ public class UserController {
             return ResponseEntity.ok("Login successful");
         } else {
             // 로그인 실패 시
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
     }
 
