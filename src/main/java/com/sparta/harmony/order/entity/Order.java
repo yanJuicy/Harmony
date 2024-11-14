@@ -67,12 +67,12 @@ public class Order extends Timestamped {
      */
     public void addOrderMenu(OrderMenu orderMenu) {
         orderMenuList.add(orderMenu);
-        orderMenu.updateOrder(this); // 반대편 연관관계 설정
+        orderMenu.updateOrder(this);
     }
 
     public void removeOrderMenu(OrderMenu orderMenu) {
         orderMenuList.remove(orderMenu);
-        orderMenu.updateOrder(null); // 반대편 연관관계 해제
+        orderMenu.updateOrder(null);
     }
 
     public void addPayments(Payments payments) {

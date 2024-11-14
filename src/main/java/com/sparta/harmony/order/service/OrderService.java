@@ -21,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -46,16 +48,16 @@ public class OrderService {
         if ((orderRequestDto.getAddress().isEmpty())
                 && (orderRequestDto.getDetailAddress().isEmpty())) {
             // 주소지가 따로 입력되지 않은 경우
-            if (orderRequestDto.getOrderType() == OrderTypeEnum.TAKEOUT) {
+            if (orderRequestDto.getOrderType().equals(OrderTypeEnum.TAKEOUT)) {
                 UUID storeId = orderRequestDto.getStoreId();
                 Address storeAddress = storeRepository.findById(storeId).orElseThrow(
                         () -> new IllegalArgumentException("가게 ID를 확인해주세요")).getAddress();
-                
+
                 address = buildAddressUseAddress(storeAddress);
             } else {
-            Address basicUserAddress = userInfo.getAddress();
+                Address basicUserAddress = userInfo.getAddress();
 
-            address = buildAddressUseAddress(basicUserAddress);
+                address = buildAddressUseAddress(basicUserAddress);
             }
 
         } else {
@@ -88,7 +90,7 @@ public class OrderService {
         // 권한에 따른 조회. User, Owner일 경우 자기 주문내역, manager이상의 경우 모든 주문 내역
         Role userRoleEnum = user.getRole();
 
-        if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
+        if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
             orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
@@ -114,7 +116,7 @@ public class OrderService {
         Role userRoleEnum = user.getRole();
         Order order;
 
-        if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
+        if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
             order = orderRepository.findByOrderIdAndUserAndDeletedFalse(orderId, user).orElseThrow(()
                     -> new OrderNotFoundException("고객님의 주문 내용이 있는지 확인해주세요."));
         } else {
@@ -128,18 +130,42 @@ public class OrderService {
     // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
-        // Jwt에서 받아온 유저 정보와 주문한 유저의 ID가 일치한지 확인 후 주문 취소 진행 필요
-        Role userRoleEnum = user.getRole();
-
-
+        // 5분 넘었을 시 취소 불가
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
 
+        LocalDateTime orderTime = order.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+        long secondDiff = Duration.between(orderTime, now).getSeconds();
+
+        if (secondDiff >= 300) {
+            throw new IllegalArgumentException("주문 시간이 5분이 넘어 취소가 불가능합니다.");
+        }
+
+        // user의 경우, Jwt에서 받아온 유저 정보와 주문한 유저의 ID가 일치한지 확인 후 주문 취소 진행 필요
+        Role userRoleEnum = user.getRole();
+        String email = userRepository.findById(user.getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 유저정보입니다. 다시 확인해주세요.")).getEmail();
+
+        if (userRoleEnum.equals(Role.USER)) {
+            UUID userId = user.getUserId();
+            UUID orderUserId = order.getUser().getUserId();
+
+            if (!userId.equals(orderUserId)) {
+                throw new IllegalArgumentException("다른 유저의 주문은 취소할 수 없습니다.");
+            }
+        }
+        softDeleteOrderAndDeleteOrderMenu(order, email);
+
         orderRepository.save(order);
-        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
+
+        return OrderResponseDto.builder()
                 .orderId(orderId)
                 .build();
+    }
 
-        return orderResponseDto;
+    private void softDeleteOrderAndDeleteOrderMenu(Order order, String email) {
+        order.softDelete(email);
+        order.getOrderMenuList().forEach(order::removeOrderMenu);
     }
 
     private Pageable getPageable(int page, int size, String sortBy, boolean isAsc) {
