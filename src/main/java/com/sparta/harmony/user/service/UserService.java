@@ -5,6 +5,7 @@ import com.sparta.harmony.user.repository.UserRepository;
 import com.sparta.harmony.user.dto.UserRequestDto;
 import com.sparta.harmony.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,19 +16,30 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 유저 생성
     @Transactional
     public UserResponseDto createUser(UserRequestDto requestDto) {
+        String encryptedPassword = passwordEncoder.encode(requestDto.getPassword());
         User user = User.builder()
                 .userName(requestDto.getUserName())
                 .email(requestDto.getEmail())
-                .password(requestDto.getPassword())
+                .password(encryptedPassword)
                 .role(requestDto.getRole())
                 .address(requestDto.getAddress())
                 .build();
         userRepository.save(user);
         return new UserResponseDto(user);
+    }
+
+    // 로그인 시 비밀번호 검증 메소드
+    @Transactional(readOnly = true)
+    public boolean login(String userName, String password) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return passwordEncoder.matches(password, user.getPassword());
     }
 
     // 유저 조회
