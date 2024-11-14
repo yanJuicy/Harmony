@@ -30,7 +30,7 @@ public class Order extends Timestamped {
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatusEnum orderStatus;
+    private OrderStatusEnum orderStatus = OrderStatusEnum.PENDING;
 
     @Column(name = "order_type", nullable = false)
     @Enumerated(EnumType.STRING)

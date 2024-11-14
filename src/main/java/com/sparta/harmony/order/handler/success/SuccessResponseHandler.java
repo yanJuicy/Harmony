@@ -13,21 +13,11 @@ import java.util.List;
 public class SuccessResponseHandler {
 
     @ResponseBody
-    public <T> ResponseEntity<ApiResponseDto<T>> handleSuccess(HttpStatus status, String message, OrderResponseDto orderResponseDto) {
+    public <T> ResponseEntity<ApiResponseDto<T>> handleSuccess(HttpStatus status, String message, T dto) {
         ApiResponseDto<T> response = new ApiResponseDto<>(
                 status.value(),
                 message,
-                orderResponseDto
-        );
-        return ResponseEntity.status(status).body(response);
-    }
-
-    @ResponseBody
-    public <T> ResponseEntity<ApiDetailResponseDto<T>> handleDetailSuccess(HttpStatus status, String message, OrderDetailResponseDto orderDetailResponseDto) {
-        ApiDetailResponseDto<T> response = new ApiDetailResponseDto<>(
-                status.value(),
-                message,
-                orderDetailResponseDto
+                dto
         );
         return ResponseEntity.status(status).body(response);
     }

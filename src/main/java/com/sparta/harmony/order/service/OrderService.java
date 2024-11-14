@@ -10,10 +10,7 @@ import com.sparta.harmony.order.entity.OrderMenu;
 import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.entity.Payments;
 import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
-import com.sparta.harmony.order.repository.OrderMenuRepository;
 import com.sparta.harmony.order.repository.OrderRepository;
-import com.sparta.harmony.order.repository.PaymentsRepository;
-import com.sparta.harmony.store.entity.Store;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
 import com.sparta.harmony.user.entity.Role;
@@ -35,13 +32,11 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderMenuRepository orderMenuRepository;
-    private final PaymentsRepository paymentsRepository;
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
 
-    // 주문 생성
+    // 주문 생성. user 이상 사용 가능
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
                                         // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
                                         UUID userId) {
@@ -77,28 +72,18 @@ public class OrderService {
 
     }
 
-    // 주문 조회
+    // 주문 조회. user이상 조회 가능
     @Transactional(readOnly = true)
-    public Page<OrderResponseDto> getOrders(User user, OrderRequestDto orderRequestDto, int page, int size,
-                                            String sortBy, boolean isAsc) {
-
+    public Page<OrderResponseDto> getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
         // 페이징 처리
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        // 권한에 따른 조회. User일 경우 자기 주문내역, Owner의 경우 가게의 주문내역, manager이상의 경우 모든 주문 내역
-        Role userRoleEnum = user.getRole();
-
+        Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;
 
-        if (userRoleEnum == Role.USER) {
+        // 권한에 따른 조회. User, Owner일 경우 자기 주문내역, manager이상의 경우 모든 주문 내역
+        Role userRoleEnum = user.getRole();
+
+        if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
             orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
-        } else if (userRoleEnum == Role.OWNER) {
-            Store store = Store.builder()
-                    .storeId(orderRequestDto.getStoreId())
-                    .build();
-            orderList = orderRepository.findAllByStoreAndDeletedByFalse(store, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
         }
@@ -106,9 +91,20 @@ public class OrderService {
         return orderList.map(OrderResponseDto::new);
     }
 
-    // 주문 상세 조회
-    public OrderDetailResponseDto getOrderByOrderId(UUID orderId, User user) {
+    // 특정 가게의 주문 조회. OWNER 이상 사용자만 조회 가능
+    @Transactional(readOnly = true)
+    public Page<OrderResponseDto> getOrdersByStoreId(UUID storeId, int page, int size,
+                                                     String sortBy, boolean isAsc) {
+        // 페이징 처리
+        Pageable pageable = getPageable(page, size, sortBy, isAsc);
+        Page<Order> orderList;
+        orderList = orderRepository.findOrderByStoreIdAndDeletedFalse(storeId, pageable);
 
+        return orderList.map(OrderResponseDto::new);
+    }
+
+    // 주문 ID를 이용한 주문 상세 조회. user와 owner는 자신의 주문만 상세 조회 가능.
+    public OrderDetailResponseDto getOrderByOrderId(UUID orderId, User user) {
         Role userRoleEnum = user.getRole();
         Order order;
 
@@ -120,24 +116,30 @@ public class OrderService {
                     -> new OrderNotFoundException("없는 주문 번호 입니다."));
         }
 
-        return new OrderDetailResponseDto(order, user);
+        return new OrderDetailResponseDto(order);
     }
 
     // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
+        // Jwt에서 받아온 유저 정보와 주문한 유저의 ID가 일치한지 확인 후 주문 취소 진행 필요
+        Role userRoleEnum = user.getRole();
 
-        // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
 
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
 
         orderRepository.save(order);
-
         OrderResponseDto orderResponseDto = OrderResponseDto.builder()
                 .orderId(orderId)
                 .build();
 
         return orderResponseDto;
+    }
+
+    private Pageable getPageable(int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        return PageRequest.of(page, size, sort);
     }
 
     private void buildMenuList(OrderRequestDto orderRequestDto, Order order) {
@@ -152,31 +154,31 @@ public class OrderService {
     }
 
     private Address buildAddressUseAddress(Address basicUserAddress) {
-        Address address;
-        address = Address.builder()
+        return Address.builder()
                 .postcode(basicUserAddress.getPostcode())
                 .address(basicUserAddress.getAddress())
                 .detailAddress(basicUserAddress.getDetailAddress())
                 .build();
-        return address;
     }
 
     private Address buildAddressUseDto(OrderRequestDto orderRequestDto) {
-        Address address;
-        address = Address.builder().postcode(orderRequestDto.getPostcode()).address(orderRequestDto.getAddress()).detailAddress(orderRequestDto.getDetailAddress()).build();
-        return address;
+        return Address.builder()
+                .postcode(orderRequestDto.getPostcode())
+                .address(orderRequestDto.getAddress())
+                .detailAddress(orderRequestDto.getDetailAddress())
+                .build();
+
     }
 
     private Payments buildPayments(User userInfo, int total_price, Order order) {
-        Payments payments = Payments.builder()
+        return Payments.builder()
                 .user(userInfo)
                 .order(order)
                 .amount(total_price).build();
-        return payments;
     }
 
     private Order buildOrder(OrderRequestDto orderRequestDto, Address address, User userInfo, int total_price) {
-        Order order = Order.builder()
+        return Order.builder()
                 .orderStatus(OrderStatusEnum.PENDING)
                 .orderType(orderRequestDto.getOrderType())
                 .specialRequest(orderRequestDto.getSpecialRequest())
@@ -186,7 +188,6 @@ public class OrderService {
                 .orderMenuList(new ArrayList<>())
                 .store(storeRepository.findById(orderRequestDto.getStoreId()).orElseThrow(() -> new IllegalArgumentException("해당 음식점이 없습니다.")))
                 .build();
-        return order;
     }
 
 

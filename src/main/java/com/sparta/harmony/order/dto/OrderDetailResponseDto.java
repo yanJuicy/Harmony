@@ -33,7 +33,7 @@ public class OrderDetailResponseDto {
     @JsonProperty("payments_id")
     private UUID paymentsId;
 
-    @JsonProperty("data")
+    @JsonProperty("order_menu_list")
     private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
 
     @JsonProperty("order_date")
@@ -58,9 +58,9 @@ public class OrderDetailResponseDto {
     @JsonProperty("special_request")
     private String specialRequest;
 
-    public OrderDetailResponseDto(Order order, User user) {
+    public OrderDetailResponseDto(Order order) {
         this.orderId = order.getOrderId();
-        this.userId = user.getUserId();
+        this.userId = order.getUser().getUserId();
         this.storeName = order.getStore().getStoreName();
         this.totalAmount = order.getTotalAmount();
         this.paymentsId = order.getPayments().getPaymentsId();
