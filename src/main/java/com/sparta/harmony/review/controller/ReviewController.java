@@ -56,17 +56,17 @@ public class ReviewController {
     }
 
     // 리뷰 삭제
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable UUID reviewId) {
-        reviewService.deleteReview(reviewId);
-        return ResponseEntity.noContent().build();
-    }
-
 //    @DeleteMapping("/{reviewId}")
-//    public ResponseEntity<String> deleteReview(@PathVariable UUID reviewId, @AuthenticationPrincipal User user) {
-//        String deletedBy = user != null ? user.getUserName() : "system";  // 삭제한 사용자 정보
-//
-//        reviewService.deleteReview(reviewId, deletedBy);
-//        return ResponseEntity.status(HttpStatus.OK).body("Review hidden successfully");
+//    public ResponseEntity<Void> deleteReview(@PathVariable UUID reviewId) {
+//        reviewService.deleteReview(reviewId);
+//        return ResponseEntity.noContent().build();
 //    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReview(@PathVariable UUID reviewId, User user) {
+        String deletedBy = user != null ? user.getUserName() : "system";  // 삭제한 사용자 정보
+
+        reviewService.deleteReview(reviewId, deletedBy);
+        return ResponseEntity.status(HttpStatus.OK).body("Review hidden successfully");
+    }
 }
