@@ -36,7 +36,7 @@ public class OrderService {
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
 
-    // 주문 생성. customer 이상 사용 가능
+    // 주문 생성. user 이상 사용 가능
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
                                         // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
                                         UUID userId) {
@@ -72,7 +72,7 @@ public class OrderService {
 
     }
 
-    // 주문 조회. customer이상 조회 가능
+    // 주문 조회. user이상 조회 가능
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
         // 페이징 처리
@@ -103,7 +103,7 @@ public class OrderService {
         return orderList.map(OrderResponseDto::new);
     }
 
-    // 주문 번호를 이용한 주문 상세 조회. user와 onwer는 자신의 주문만 상세 조회 가능.
+    // 주문 ID를 이용한 주문 상세 조회. user와 owner는 자신의 주문만 상세 조회 가능.
     public OrderDetailResponseDto getOrderByOrderId(UUID orderId, User user) {
         Role userRoleEnum = user.getRole();
         Order order;
@@ -116,13 +116,16 @@ public class OrderService {
                     -> new OrderNotFoundException("없는 주문 번호 입니다."));
         }
 
-        return new OrderDetailResponseDto(order, user);
+        return new OrderDetailResponseDto(order);
     }
 
     // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
-        // Jwt에서 받아온 유저 정보와 client요청에서 넘어온 유저 ID가 일치한지 확인 후 주문 취소 진행 필요
+        // Jwt에서 받아온 유저 정보와 주문한 유저의 ID가 일치한지 확인 후 주문 취소 진행 필요
+        Role userRoleEnum = user.getRole();
+
+
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
 
         orderRepository.save(order);

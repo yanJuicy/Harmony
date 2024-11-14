@@ -17,7 +17,13 @@ import java.util.UUID;
 public class PaymentsResponseDto {
 
     @JsonProperty("payments_id")
+    private UUID paymentsId;
+
+    @JsonProperty("store_id")
     private UUID storeId;
+
+    @JsonProperty("store_name")
+    private String storeName;
 
     @JsonProperty("order_id")
     private UUID orderId;
@@ -25,7 +31,9 @@ public class PaymentsResponseDto {
     private int amount;
 
     public PaymentsResponseDto(Payments payments) {
-        this.storeId = payments.getPaymentsId();
+        this.paymentsId = payments.getPaymentsId();
+        this.storeId = payments.getOrder().getStore().getStoreId();
+        this.storeName = payments.getOrder().getStore().getStoreName();
         this.orderId = payments.getOrder().getOrderId();
         this.amount = payments.getAmount();
     }

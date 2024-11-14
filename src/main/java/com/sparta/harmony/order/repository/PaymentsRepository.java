@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,4 +15,8 @@ public interface PaymentsRepository extends JpaRepository<Payments, UUID>, Payme
     Page<Payments> findAllByUserAndDeletedByFalse(User user, Pageable pageable);
 
     Page<Payments> findAllByDeletedFalse(Pageable pageable);
+
+    Optional<Payments> findByPaymentsIdAndUserAndDeletedFalse(UUID paymentsId, User user);
+
+    Optional<Payments> findByPaymentsIdAndDeletedFalse(UUID paymentsId);
 }

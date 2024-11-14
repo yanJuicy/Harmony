@@ -17,7 +17,5 @@ public class ApiResponseDto<T> {
 
     private int status;
     private String message;
-
-    @JsonProperty("data")
-    private OrderResponseDto orderResponseDto;
+    private T data;
 }
