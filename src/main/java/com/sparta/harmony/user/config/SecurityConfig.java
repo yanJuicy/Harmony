@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
         );
 
+        // 테스트 ㅇㅇㅇ
+
         return http.build();
     }
 
