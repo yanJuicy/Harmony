@@ -2,10 +2,12 @@ package com.sparta.harmony.menu.controller;
 
 import com.sparta.harmony.menu.dto.MenuCreateRequestDto;
 import com.sparta.harmony.menu.dto.MenuCreateResponseDto;
+import com.sparta.harmony.menu.dto.MenuGetResponseDto;
 import com.sparta.harmony.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,5 +30,14 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(result);
     }
+
+    @GetMapping("/{storeId}/menus/{menuId}")
+    public ResponseEntity<MenuGetResponseDto> get(@PathVariable String storeId, @PathVariable String menuId) {
+        MenuGetResponseDto result = menuService.getMenu(UUID.fromString(storeId), UUID.fromString(menuId));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(result);
+    }
+
 
 }
