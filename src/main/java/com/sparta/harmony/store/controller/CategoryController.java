@@ -1,5 +1,8 @@
 package com.sparta.harmony.store.controller;
 
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.store.dto.CategoryRequestDto;
 import com.sparta.harmony.store.dto.CategoryResponseDto;
 import com.sparta.harmony.store.entity.Category;
@@ -20,14 +23,17 @@ import java.util.UUID;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final SuccessResponseHandler successResponseHandler;
+
 
     /**
      * 전체 카테고리 조회 메소드
      * @return 모든 카테고리 정보를 담고 있는 CategoryResponseDto 객체 리스트
      */
     @GetMapping
-    public List<CategoryResponseDto> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<ApiResponseDto<List<CategoryResponseDto>>> getAllCategories() {
+        List<CategoryResponseDto> categories = categoryService.getAllCategories();
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "카테고리 목록 조회 성공", categories);
     }
 
     /**
@@ -36,9 +42,11 @@ public class CategoryController {
      * @return 생성된 카테고리 정보를 담고 있는 CategoryResponseDto 객체
      */
     @PostMapping
-    public CategoryResponseDto createProduct(@RequestBody CategoryRequestDto requestDto) {
-        return categoryService.createCategory(requestDto);
+    public ResponseEntity<ApiResponseDto<CategoryResponseDto>> createCategory(@RequestBody CategoryRequestDto requestDto) {
+        CategoryResponseDto categoryResponseDto = categoryService.createCategory(requestDto);
+        return successResponseHandler.handleSuccess(HttpStatus.CREATED, "카테고리 생성 성공", categoryResponseDto);
     }
+
 
     /**
      * 카테고리 수정 메소드
@@ -47,8 +55,9 @@ public class CategoryController {
      * @return 수정된 카테고리 정보를 담고 있는 CategoryResponseDto 객체
      */
     @PutMapping("/{categoryId}")
-    public CategoryResponseDto updateCategory(@PathVariable UUID categoryId, @RequestBody CategoryRequestDto requestDto) {
-        return categoryService.updateCategory(categoryId, requestDto);
+    public ResponseEntity<ApiResponseDto<CategoryResponseDto>> updateCategory(@PathVariable UUID categoryId, @RequestBody CategoryRequestDto requestDto) {
+        CategoryResponseDto categoryResponseDto = categoryService.updateCategory(categoryId, requestDto);
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "카테고리 수정 성공", categoryResponseDto);
     }
 
     /**
@@ -56,8 +65,9 @@ public class CategoryController {
      * @param categoryId 삭제할 카테고리의 UUID
      */
     @DeleteMapping("/{categoryId}")
-    public void deleteCategory(@PathVariable UUID categoryId) {
+    public ResponseEntity<ApiResponseDto<Void>> deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategory(categoryId);
+        return successResponseHandler.handleSuccess(HttpStatus.NO_CONTENT, "카테고리 삭제 성공", null);
     }
 
     /**
@@ -67,7 +77,8 @@ public class CategoryController {
      * @return 검색된 카테고리 이름 리스트(페이징 처리됨)
      */
     @GetMapping("/search")
-    public Page<String> searchCategory(@RequestParam(required = false) String searchKeyword, Pageable pageable) {
-        return categoryService.searchCategories(searchKeyword,pageable);
+    public ResponseEntity<ApiPageResponseDto<String>> searchCategory(@RequestParam(required = false) String searchKeyword, Pageable pageable) {
+        Page<String> searchResults = categoryService.searchCategories(searchKeyword, pageable);
+        return successResponseHandler.handlePageSuccess(HttpStatus.OK, "카테고리 검색 결과", searchResults);
     }
 }
