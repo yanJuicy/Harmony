@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Table(name = "p_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends Timestamped {
     @Id

@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.dto;
+package com.sparta.harmony.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponsePageDto<T> {
+public class ApiPageResponseDto<T> {
 
     private int status;
     private String message;

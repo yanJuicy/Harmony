@@ -1,12 +1,8 @@
 package com.sparta.harmony.order.service;
 
 import com.sparta.harmony.menu.repository.MenuRepository;
-import com.sparta.harmony.order.dto.OrderDetailResponseDto;
-import com.sparta.harmony.order.dto.OrderRequestDataDto;
-import com.sparta.harmony.order.dto.OrderRequestDto;
-import com.sparta.harmony.order.dto.OrderResponseDto;
+import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
-import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
@@ -119,10 +115,10 @@ public class OrderService {
 
         if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
             order = orderRepository.findByOrderIdAndUserAndDeletedFalse(orderId, user).orElseThrow(()
-                    -> new OrderNotFoundException("고객님의 주문 내용이 있는지 확인해주세요."));
+                    -> new IllegalArgumentException("고객님의 주문 내용이 있는지 확인해주세요."));
         } else {
             order = orderRepository.findByOrderIdAndDeletedFalse(orderId).orElseThrow(()
-                    -> new OrderNotFoundException("없는 주문 번호 입니다."));
+                    -> new IllegalArgumentException("없는 주문 번호 입니다."));
         }
 
         return new OrderDetailResponseDto(order);
@@ -130,19 +126,19 @@ public class OrderService {
 
     // 주문 상태 update. owner 이상 사용자만 이용 가능
     @Transactional
-    public OrderDetailResponseDto updateOrderStatus(UUID orderId, OrderRequestDto orderRequestDto) {
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatusRequestDto orderStatusDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new IllegalArgumentException("없는 주문 번호입니다."));
 
-        order.updateOrderStatus(orderRequestDto.getOrderStatus());
-        return new OrderDetailResponseDto(order);
+        order.updateOrderStatus(orderStatusDto.getOrderStatus());
+        return new OrderResponseDto(order);
     }
 
     // 주문 취소(soft delete)
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
         // 5분 넘었을 시 취소 불가
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         LocalDateTime orderTime = order.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
@@ -187,7 +183,7 @@ public class OrderService {
     }
 
     private void buildMenuList(OrderRequestDto orderRequestDto, Order order) {
-        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderMenuListRequestDto menuItem : orderRequestDto.getOrderMenuList()) {
             OrderMenu orderMenu = OrderMenu.builder()
                     .quantity(menuItem.getQuantity())
                     .order(order)
@@ -238,7 +234,7 @@ public class OrderService {
     private int getTotalPrice(OrderRequestDto orderRequestDto) {
         int total_price = 0;
 
-        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderMenuListRequestDto menuItem : orderRequestDto.getOrderMenuList()) {
             int price = menuRepository.findById(menuItem.getMenuId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다.")).getPrice();
             int quantity = menuItem.getQuantity();

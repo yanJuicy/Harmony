@@ -1,10 +1,10 @@
 package com.sparta.harmony.order.controller;
 
-import com.sparta.harmony.order.dto.ApiResponseDto;
-import com.sparta.harmony.order.dto.ApiResponsePageDto;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
 import com.sparta.harmony.order.dto.PaymentsDetailResponseDto;
 import com.sparta.harmony.order.dto.PaymentsResponseDto;
-import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.PaymentsService;
 import com.sparta.harmony.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class PaymentsController {
 
     // user 이상 사용 가능
     @GetMapping("/payments")
-    public ResponseEntity<ApiResponsePageDto<PaymentsResponseDto>> getPayments(
+    public ResponseEntity<ApiPageResponseDto<PaymentsResponseDto>> getPayments(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
@@ -42,7 +42,7 @@ public class PaymentsController {
 
     // owner 이상만 사용 가능
     @GetMapping("/payments/store/{storeId}")
-    public ResponseEntity<ApiResponsePageDto<PaymentsResponseDto>> getPaymentsByStoreId(
+    public ResponseEntity<ApiPageResponseDto<PaymentsResponseDto>> getPaymentsByStoreId(
             @PathVariable UUID storeId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,

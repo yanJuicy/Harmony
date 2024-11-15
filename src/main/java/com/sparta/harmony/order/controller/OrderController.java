@@ -1,10 +1,12 @@
 package com.sparta.harmony.order.controller;
 
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
 import com.sparta.harmony.order.dto.*;
-import com.sparta.harmony.order.entity.OrderStatusEnum;
-import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.OrderService;
 import com.sparta.harmony.user.entity.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ public class OrderController {
 
     // user 이상 사용 가능.
     @PostMapping("/orders")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto,
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody @Valid OrderRequestDto orderRequestDto,
                                                                         // security 적용 후 jwt 인증객체 받아오은걸로 변경 예정
                                                                         @RequestParam(value = "user_id") UUID userId) {
         OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
@@ -46,7 +48,7 @@ public class OrderController {
 
     // user 이상 사용 가능.
     @GetMapping("/orders")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrders(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrders(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
@@ -75,7 +77,7 @@ public class OrderController {
 
     // owner 이상만 사용 가능
     @GetMapping("/orders/store/{storeId}")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrderByStoreId(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrderByStoreId(
             @PathVariable UUID storeId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -92,16 +94,16 @@ public class OrderController {
 
     // owner 이상 사용 가능
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> updateOrderStatus(
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> updateOrderStatus(
             @PathVariable UUID orderId,
-            @RequestBody OrderRequestDto orderRequestDto
+            @RequestBody @Valid OrderStatusRequestDto orderStatusDto
             ) {
-        OrderDetailResponseDto orderDetailResponseDto = orderService.updateOrderStatus(orderId, orderRequestDto);
+        OrderResponseDto orderResponseDto = orderService.updateOrderStatus(orderId, orderStatusDto);
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.OK,
                 "수정이 완료되었습니다.",
-                orderDetailResponseDto
+                orderResponseDto
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.config;
+package com.sparta.harmony.common.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
