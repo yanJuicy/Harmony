@@ -1,4 +1,4 @@
-package com.sparta.harmony.user.config;
+package com.sparta.harmony.common.config;
 
 import com.sparta.harmony.jwt.JwtUtil;
 import com.sparta.harmony.security.JwtAuthenticationFilter;
