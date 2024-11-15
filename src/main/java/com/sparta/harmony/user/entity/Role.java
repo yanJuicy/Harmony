@@ -12,10 +12,7 @@ public enum Role {
     MANAGER("ROLE_MANAGER","관리자"),
     MASTER("ROLE_MASTER","총책임자");
 
-    private final String key;
+    private final String authority;
     private final String title;
-
-    public String getAuthority() {
-        return this.key;
-    }
+    
 }

@@ -1,7 +1,9 @@
 package com.sparta.harmony.review.repository;
 
+import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.review.entity.Review;
 import com.sparta.harmony.store.entity.Store;
+import com.sparta.harmony.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,12 +13,14 @@ import java.util.UUID;
 
 public interface ReviewRepository  extends JpaRepository<Review, UUID> {
 
-    List<Review> findByStore_StoreId(UUID storeId);
+    // 삭제되지 않은 특정 음식점의 리뷰 리스트 조회
+    List<Review> findByStoreAndDeletedFalse(Store store);
 
-    List<Review> findByUser_UserId(UUID userId);
+    // 삭제되지 않은 특정 사용자의 리뷰 리스트 조회
+    List<Review> findByUserAndDeletedFalse(User user);
 
-    Review findByOrder_OrderId(UUID orderId);
-
+    // 삭제되지 않은 특정 주문의 리뷰 조회
+    Review findByOrderAndDeletedFalse(Order order);
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.store.storeId = :storeId")
     Optional<Double> findAverageRatingByStoreId(UUID storeId);
 
