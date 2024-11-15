@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.dto;
+package com.sparta.harmony.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

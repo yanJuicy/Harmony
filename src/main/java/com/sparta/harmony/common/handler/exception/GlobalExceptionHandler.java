@@ -1,5 +1,7 @@
-package com.sparta.harmony.order.handler.exception;
+package com.sparta.harmony.common.handler.exception;
 
+import com.sparta.harmony.order.exception.OrderNotFoundException;
+import com.sparta.harmony.order.exception.PaymentsNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -7,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = {"com.sparta.harmony.order.controller"})
-public class OrderExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<RestApiException> illegalArgumentExceptionHandler(IllegalArgumentException ex) {

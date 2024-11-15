@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class OrderStatusDto {
+public class OrderStatusRequestDto {
 
     @NotEmpty
     @JsonProperty("order_status")

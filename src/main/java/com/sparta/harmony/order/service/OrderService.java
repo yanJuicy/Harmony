@@ -3,7 +3,7 @@ package com.sparta.harmony.order.service;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
-import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
+import com.sparta.harmony.order.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
@@ -127,7 +127,7 @@ public class OrderService {
 
     // 주문 상태 update. owner 이상 사용자만 이용 가능
     @Transactional
-    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatusDto orderStatusDto) {
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatusRequestDto orderStatusDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new IllegalArgumentException("없는 주문 번호입니다."));
 
@@ -184,7 +184,7 @@ public class OrderService {
     }
 
     private void buildMenuList(OrderRequestDto orderRequestDto, Order order) {
-        for (OrderRequestOrderMenuListDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderMenuListRequestDto menuItem : orderRequestDto.getOrderMenuList()) {
             OrderMenu orderMenu = OrderMenu.builder()
                     .quantity(menuItem.getQuantity())
                     .order(order)
@@ -235,7 +235,7 @@ public class OrderService {
     private int getTotalPrice(OrderRequestDto orderRequestDto) {
         int total_price = 0;
 
-        for (OrderRequestOrderMenuListDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderMenuListRequestDto menuItem : orderRequestDto.getOrderMenuList()) {
             int price = menuRepository.findById(menuItem.getMenuId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다.")).getPrice();
             int quantity = menuItem.getQuantity();

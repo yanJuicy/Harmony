@@ -1,4 +1,4 @@
-package com.sparta.harmony;
+package com.sparta.harmony.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

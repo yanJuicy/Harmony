@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.handler.exception;
+package com.sparta.harmony.order.exception;
 
 public class PaymentsNotFoundException extends RuntimeException {
     public PaymentsNotFoundException(String message) {

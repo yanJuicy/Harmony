@@ -30,7 +30,7 @@ public class OrderResponseDto {
     private int totalAmount;
 
     @JsonProperty("order_menu_list")
-    private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
+    private List<OrderMenuListResponseDto> orderMenuList = new ArrayList<>();
 
     @JsonProperty("order_date")
     private LocalDateTime createdAt;
@@ -46,7 +46,7 @@ public class OrderResponseDto {
         this.storeName = order.getStore().getStoreName();
         this.totalAmount = order.getTotalAmount();
         this.orderMenuList = order.getOrderMenuList().stream()
-                .map(OrderResponseOrderMenuListDto::new)
+                .map(OrderMenuListResponseDto::new)
                 .toList();
         this.orderType = order.getOrderType();
         this.orderStatus = order.getOrderStatus();
