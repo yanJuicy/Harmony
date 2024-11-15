@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Table(name = "p_order")
+@DynamicUpdate
 @NoArgsConstructor
 public class Order extends Timestamped {
 
@@ -28,7 +30,7 @@ public class Order extends Timestamped {
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatusEnum orderStatus;
+    private OrderStatusEnum orderStatus = OrderStatusEnum.PENDING;
 
     @Column(name = "order_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -65,12 +67,12 @@ public class Order extends Timestamped {
      */
     public void addOrderMenu(OrderMenu orderMenu) {
         orderMenuList.add(orderMenu);
-        orderMenu.updateOrder(this); // 반대편 연관관계 설정
+        orderMenu.updateOrder(this);
     }
 
     public void removeOrderMenu(OrderMenu orderMenu) {
         orderMenuList.remove(orderMenu);
-        orderMenu.updateOrder(null); // 반대편 연관관계 해제
+        orderMenu.updateOrder(null);
     }
 
     public void addPayments(Payments payments) {
@@ -105,4 +107,11 @@ public class Order extends Timestamped {
     /**
      * 서비스 메소드 - 외부에서 엔티티를 수정할 메소드를 정의합니다. (단일 책임을 가지도록 주의합니다.)
      */
+    public void updateUser(User user) {
+        this.user = user;
+    }
+
+    public void updateOrderStatus(OrderStatusEnum orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

@@ -1,6 +1,5 @@
 package com.sparta.harmony.order.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +12,21 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponseDto<T> {
+public class ApiResponsePageDto<T> {
 
     private int status;
     private String message;
-    private T data;
+
+    private int page;
+
+    private int size;
+
+    @JsonProperty("total_elements")
+    private long totalElements;
+
+    @JsonProperty("total_page")
+    private int totalPage;
+
+    @JsonProperty("data")
+    private List<T> data;
 }

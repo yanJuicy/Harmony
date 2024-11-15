@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "p_order_menu")
+@DynamicUpdate
 @NoArgsConstructor
 public class OrderMenu extends Timestamped {
 

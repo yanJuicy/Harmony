@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Table(name = "p_payments")
+@DynamicUpdate
 @NoArgsConstructor
 public class Payments extends Timestamped {
 
@@ -57,5 +59,9 @@ public class Payments extends Timestamped {
      */
     public void updateOrder(Order order) {
         this.order = order;
+    }
+
+    public void updateUser(User user) {
+        this.user = user;
     }
 }
