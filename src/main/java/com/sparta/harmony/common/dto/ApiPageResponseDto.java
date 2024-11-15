@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponsePageDto<T> {
+public class ApiPageResponseDto<T> {
 
     private int status;
     private String message;

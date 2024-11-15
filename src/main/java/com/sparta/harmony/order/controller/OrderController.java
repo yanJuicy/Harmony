@@ -1,7 +1,7 @@
 package com.sparta.harmony.order.controller;
 
 import com.sparta.harmony.common.dto.ApiResponseDto;
-import com.sparta.harmony.common.dto.ApiResponsePageDto;
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
 import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.OrderService;
@@ -48,7 +48,7 @@ public class OrderController {
 
     // user 이상 사용 가능.
     @GetMapping("/orders")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrders(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrders(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
@@ -77,7 +77,7 @@ public class OrderController {
 
     // owner 이상만 사용 가능
     @GetMapping("/orders/store/{storeId}")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrderByStoreId(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrderByStoreId(
             @PathVariable UUID storeId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
