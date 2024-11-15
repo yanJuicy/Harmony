@@ -1,10 +1,7 @@
 package com.sparta.harmony.order.service;
 
 import com.sparta.harmony.menu.repository.MenuRepository;
-import com.sparta.harmony.order.dto.OrderDetailResponseDto;
-import com.sparta.harmony.order.dto.OrderRequestDataDto;
-import com.sparta.harmony.order.dto.OrderRequestDto;
-import com.sparta.harmony.order.dto.OrderResponseDto;
+import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
 import com.sparta.harmony.order.handler.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderRepository;
@@ -130,12 +127,12 @@ public class OrderService {
 
     // 주문 상태 update. owner 이상 사용자만 이용 가능
     @Transactional
-    public OrderDetailResponseDto updateOrderStatus(UUID orderId, OrderRequestDto orderRequestDto) {
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatusDto orderStatusDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new IllegalArgumentException("없는 주문 번호입니다."));
 
-        order.updateOrderStatus(orderRequestDto.getOrderStatus());
-        return new OrderDetailResponseDto(order);
+        order.updateOrderStatus(orderStatusDto.getOrderStatus());
+        return new OrderResponseDto(order);
     }
 
     // 주문 취소(soft delete)
@@ -187,7 +184,7 @@ public class OrderService {
     }
 
     private void buildMenuList(OrderRequestDto orderRequestDto, Order order) {
-        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderRequestOrderMenuListDto menuItem : orderRequestDto.getOrderMenuList()) {
             OrderMenu orderMenu = OrderMenu.builder()
                     .quantity(menuItem.getQuantity())
                     .order(order)
@@ -238,7 +235,7 @@ public class OrderService {
     private int getTotalPrice(OrderRequestDto orderRequestDto) {
         int total_price = 0;
 
-        for (OrderRequestDataDto menuItem : orderRequestDto.getOrderMenuList()) {
+        for (OrderRequestOrderMenuListDto menuItem : orderRequestDto.getOrderMenuList()) {
             int price = menuRepository.findById(menuItem.getMenuId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 메뉴가 없습니다.")).getPrice();
             int quantity = menuItem.getQuantity();

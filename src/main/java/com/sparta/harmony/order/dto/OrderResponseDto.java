@@ -2,6 +2,7 @@ package com.sparta.harmony.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Order;
+import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.entity.OrderTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,9 @@ public class OrderResponseDto {
     @JsonProperty("order_type")
     private OrderTypeEnum orderType;
 
+    @JsonProperty("order_status")
+    private OrderStatusEnum orderStatus;
+
     public OrderResponseDto(Order order) {
         this.orderId = order.getOrderId();
         this.storeName = order.getStore().getStoreName();
@@ -45,6 +49,7 @@ public class OrderResponseDto {
                 .map(OrderResponseOrderMenuListDto::new)
                 .toList();
         this.orderType = order.getOrderType();
+        this.orderStatus = order.getOrderStatus();
         this.createdAt = order.getCreatedAt();
     }
 }
