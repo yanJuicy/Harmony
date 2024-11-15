@@ -1,5 +1,7 @@
 package com.sparta.harmony.user.controller;
 
+import com.sparta.harmony.jwt.JwtUtil;
+import com.sparta.harmony.user.dto.LoginRequestDto;
 import com.sparta.harmony.user.dto.UserRequestDto;
 import com.sparta.harmony.user.dto.UserResponseDto;
 import com.sparta.harmony.user.service.UserService;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     // 유저 생성
     @PostMapping
@@ -34,14 +37,11 @@ public class UserController {
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String userName, @RequestParam String password) {
-        boolean isAuthenticated = userService.login(userName, password);
-
-        if (isAuthenticated) {
-            // 로그인 성공 시 토큰 생성 또는 로그인 처리 로직 추가 가능
-            return ResponseEntity.ok("Login successful");
+    public ResponseEntity<String> login(@RequestParam LoginRequestDto loginRequestDto) {
+        String token = userService.login(loginRequestDto);
+        if (token != null) {
+            return ResponseEntity.ok(token); // JWT 토큰을 클라이언트에 전달
         } else {
-            // 로그인 실패 시
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
     }

@@ -29,9 +29,7 @@ public class ReviewService {
 
     //리뷰 생성
     @Transactional
-    public ReviewResponseDto createReview(ReviewRequestDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid User ID"));
+    public ReviewResponseDto createReview(ReviewRequestDto requestDto, User user) {
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Order ID"));
         if(!order.getUser().equals(user)){
@@ -59,7 +57,8 @@ public class ReviewService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("음식점 정보를 찾을 수 없습니다"));
 
-        List<Review> reviews = reviewRepository.findByStore(store);
+        // 삭제되지 않은 리뷰만 조회
+        List<Review> reviews = reviewRepository.findByStoreAndDeletedFalse(store);
 
         return reviews.stream()
                 .map(ReviewResponseDto::new)
@@ -68,7 +67,10 @@ public class ReviewService {
 
     // 특정 사용자 대한 리뷰 조회
     public List<ReviewResponseDto> getReviewsByUser(UUID userId) {
-        List<Review> reviews = reviewRepository.findByUser_UserId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+        // 삭제되지 않은 리뷰만 조회
+        List<Review> reviews = reviewRepository.findByUserAndDeletedFalse(user);
         return reviews.stream()
                 .map(ReviewResponseDto::new)
                 .collect(Collectors.toList());
@@ -76,16 +78,23 @@ public class ReviewService {
 
     // 특정 주문 대한 리뷰 조회
     public ReviewResponseDto getReviewByOrder(UUID orderId) {
-        Review review = reviewRepository.findByOrder_OrderId(orderId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문 정보를 찾을 수 없습니다"));
+
+        // 삭제되지 않은 리뷰만 조회
+        Review review = reviewRepository.findByOrderAndDeletedFalse(order);
         return new ReviewResponseDto(review);
     }
 
     //리뷰 수정
     @Transactional
-    public ReviewResponseDto updateReview(UUID reviewId, ReviewRequestDto requestDto) {
+    public ReviewResponseDto updateReview(UUID reviewId, ReviewRequestDto requestDto, User user) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Review not found with : " + reviewId));
 
+        if(!review.getUser().equals(user)){
+            throw new SecurityException("해당 리뷰 수정할 수가 없습니다.");
+        }
         review.updateReview(requestDto.getComment(), requestDto.getRating());
         return new ReviewResponseDto(review);
     }
