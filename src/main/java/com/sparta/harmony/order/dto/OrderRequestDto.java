@@ -25,7 +25,7 @@ public class OrderRequestDto {
 
     @NotEmpty(message = "메뉴 선택은 필수입니다.")
     @JsonProperty("order_menu_list")
-    private List<OrderRequestOrderMenuListDto> orderMenuList = new ArrayList<>();
+    private List<OrderMenuListRequestDto> orderMenuList = new ArrayList<>();
 
     @NotEmpty(message = "배달/포장 선택은 필수입니다.")
     @JsonProperty("order_type")

@@ -1,10 +1,10 @@
 package com.sparta.harmony.order.controller;
 
-import com.sparta.harmony.order.dto.ApiResponseDto;
-import com.sparta.harmony.order.dto.ApiResponsePageDto;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.dto.ApiResponsePageDto;
 import com.sparta.harmony.order.dto.PaymentsDetailResponseDto;
 import com.sparta.harmony.order.dto.PaymentsResponseDto;
-import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.PaymentsService;
 import com.sparta.harmony.user.entity.User;
 import lombok.RequiredArgsConstructor;
