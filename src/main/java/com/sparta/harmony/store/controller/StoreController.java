@@ -1,5 +1,7 @@
 package com.sparta.harmony.store.controller;
 
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.store.dto.StoreDetailResponseDto;
 import com.sparta.harmony.store.dto.StoreRequestDto;
 import com.sparta.harmony.store.dto.StoreResponseDto;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,14 +25,15 @@ public class StoreController {
 
     @Autowired
     private StoreService storeService;
-
+    private final SuccessResponseHandler successResponseHandler;
     /**
      * 모든 음식점 정보 조회
      * @return 모든 음식점 정보를 담고 있는 StoreResponseDto 객체 리스트
      */
     @GetMapping
-    public List<StoreResponseDto> getAllStores() {
-        return storeService.getAllStores();
+    public ResponseEntity<ApiResponseDto<List<StoreResponseDto>>> getAllStores() {
+        List<StoreResponseDto> storeList = storeService.getAllStores();
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "음식점 정보 조회 성공", storeList);
     }
 
     /**
@@ -37,8 +42,9 @@ public class StoreController {
      * @return 생성된 음식점 정보를 담고 있는 StoreResponseDto 객체
      */
     @PostMapping
-    public StoreResponseDto createStore(@RequestBody StoreRequestDto storeRequestDto) {
-        return storeService.createStore(storeRequestDto);
+    public ResponseEntity<ApiResponseDto<StoreResponseDto>> createStore(@RequestBody StoreRequestDto storeRequestDto) {
+        StoreResponseDto store = storeService.createStore(storeRequestDto);
+        return successResponseHandler.handleSuccess(HttpStatus.CREATED, "음식점 생성 성공", store);
     }
 
     /**
@@ -48,8 +54,9 @@ public class StoreController {
      * @return 수정된 음식점 정보를 담고 있는 StoreResponseDto 객체
      */
     @PutMapping("/{storeId}")
-    public StoreResponseDto updateStore(@PathVariable UUID storeId, @RequestBody StoreRequestDto storeRequestDto) {
-        return storeService.updateStore(storeId, storeRequestDto);
+    public ResponseEntity<ApiResponseDto<StoreResponseDto>> updateStore(@PathVariable UUID storeId, @RequestBody StoreRequestDto storeRequestDto) {
+        StoreResponseDto updatedStore = storeService.updateStore(storeId, storeRequestDto);
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "음식점 수정 성공", updatedStore);
     }
 
     /**
@@ -57,8 +64,9 @@ public class StoreController {
      * @param storeId 삭제할 음식점의 UUID
      */
     @DeleteMapping("/{storeId}")
-    public void deleteStore(@PathVariable UUID storeId) {
+    public ResponseEntity<ApiResponseDto<Void>> deleteStore(@PathVariable UUID storeId) {
         storeService.deleteStore(storeId);
+        return successResponseHandler.handleSuccess(HttpStatus.NO_CONTENT, "음식점 삭제 성공", null);
     }
 
     /**
@@ -69,14 +77,18 @@ public class StoreController {
      * @return 음식점 이름과 평균 rating을 포함한 페이징 처리된 음식점 목록
      */
     @GetMapping("/search")
-    public Object searchStores(@RequestParam(required = false) String searchKeyword, Pageable pageable) {
+    public ResponseEntity<?> searchStores(@RequestParam(required = false) String searchKeyword, Pageable pageable) {
         Object response = storeService.searchStores(searchKeyword, pageable);
 
         if (response instanceof List) {
+            // 검색 결과가 없거나, 검색어가 없을 경우
             List<String> messages = (List<String>) response;
-            return messages;
+            return successResponseHandler.handleSuccess(HttpStatus.OK, messages.get(0), null);
+        } else {
+            // 검색 결과가 있을 경우
+            Page<StoreSearchResponseDto> storesPage = (Page<StoreSearchResponseDto>) response;
+            return successResponseHandler.handlePageSuccess(HttpStatus.OK, "음식점 검색 성공", storesPage);
         }
-        return response;
     }
 
     /**
@@ -86,7 +98,8 @@ public class StoreController {
      * @return 해당 음식점의 상세 정보
      */
     @GetMapping("/{storeId}")
-    public StoreDetailResponseDto getStoreDetail(@PathVariable UUID storeId) {
-        return storeService.getStoreDetail(storeId);
+    public ResponseEntity<ApiResponseDto<StoreDetailResponseDto>> getStoreDetail(@PathVariable UUID storeId) {
+        StoreDetailResponseDto storeDetail = storeService.getStoreDetail(storeId);
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "음식점 상세 정보 조회 성공", storeDetail);
     }
 }
