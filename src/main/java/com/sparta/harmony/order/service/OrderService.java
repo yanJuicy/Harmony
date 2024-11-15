@@ -3,7 +3,6 @@ package com.sparta.harmony.order.service;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
-import com.sparta.harmony.order.exception.OrderNotFoundException;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
@@ -116,10 +115,10 @@ public class OrderService {
 
         if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
             order = orderRepository.findByOrderIdAndUserAndDeletedFalse(orderId, user).orElseThrow(()
-                    -> new OrderNotFoundException("고객님의 주문 내용이 있는지 확인해주세요."));
+                    -> new IllegalArgumentException("고객님의 주문 내용이 있는지 확인해주세요."));
         } else {
             order = orderRepository.findByOrderIdAndDeletedFalse(orderId).orElseThrow(()
-                    -> new OrderNotFoundException("없는 주문 번호 입니다."));
+                    -> new IllegalArgumentException("없는 주문 번호 입니다."));
         }
 
         return new OrderDetailResponseDto(order);
@@ -139,7 +138,7 @@ public class OrderService {
     @Transactional
     public OrderResponseDto softDeleteOrder(UUID orderId, User user) {
         // 5분 넘었을 시 취소 불가
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("주문을 찾을 수 없습니다."));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         LocalDateTime orderTime = order.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
