@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class OrderRequestOrderMenuListDto {
+public class OrderMenuListRequestDto {
 
     @NotEmpty
     @JsonProperty("menu_id")

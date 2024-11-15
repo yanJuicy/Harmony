@@ -2,7 +2,6 @@ package com.sparta.harmony.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Payments;
-import com.sparta.harmony.user.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ public class PaymentsDetailResponseDto {
     @JsonProperty("store_name")
     private String storeName;
 
-    private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
+    private List<OrderMenuListResponseDto> orderMenuList = new ArrayList<>();
 
     public PaymentsDetailResponseDto(Payments payments) {
         this.paymentsId = payments.getPaymentsId();
@@ -44,7 +43,7 @@ public class PaymentsDetailResponseDto {
         this.email = payments.getUser().getEmail();
         this.storeName = payments.getOrder().getStore().getStoreName();
         this.orderMenuList = payments.getOrder().getOrderMenuList().stream()
-                .map(OrderResponseOrderMenuListDto::new)
+                .map(OrderMenuListResponseDto::new)
                 .toList();
         this.amount = payments.getAmount();
         this.createdAt = payments.getCreatedAt();

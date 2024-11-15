@@ -1,8 +1,9 @@
 package com.sparta.harmony.order.controller;
 
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.dto.ApiResponsePageDto;
 import com.sparta.harmony.order.dto.*;
-import com.sparta.harmony.order.entity.OrderStatusEnum;
-import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
 import com.sparta.harmony.order.service.OrderService;
 import com.sparta.harmony.user.entity.User;
 import jakarta.validation.Valid;
@@ -95,7 +96,7 @@ public class OrderController {
     @PutMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponseDto<OrderResponseDto>> updateOrderStatus(
             @PathVariable UUID orderId,
-            @RequestBody @Valid OrderStatusDto orderStatusDto
+            @RequestBody @Valid OrderStatusRequestDto orderStatusDto
             ) {
         OrderResponseDto orderResponseDto = orderService.updateOrderStatus(orderId, orderStatusDto);
 

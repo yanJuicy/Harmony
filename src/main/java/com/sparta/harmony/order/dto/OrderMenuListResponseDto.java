@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class OrderResponseOrderMenuListDto {
+public class OrderMenuListResponseDto {
 
     @JsonProperty("menu_id")
     private UUID menuId;
@@ -24,7 +24,7 @@ public class OrderResponseOrderMenuListDto {
     @JsonProperty("quantity")
     private int quantity;
 
-    public OrderResponseOrderMenuListDto(OrderMenu orderMenu) {
+    public OrderMenuListResponseDto(OrderMenu orderMenu) {
         this.menuId = orderMenu.getMenu().getMenuId();
         this.quantity = orderMenu.getQuantity();
         this.menuName = orderMenu.getMenu().getName();

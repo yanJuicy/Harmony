@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.handler.exception;
+package com.sparta.harmony.order.exception;
 
 public class OrderNotFoundException extends RuntimeException {
     public OrderNotFoundException(String message) {
