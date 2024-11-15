@@ -5,16 +5,16 @@ on:
   push:
     branches:
       - develop
-    
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
@@ -45,5 +45,10 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            kill -9 $(ps -ef | grep java | head -n 1 |
-            nohup java -jar *.jar 1> /dev/null 2>&1 &
+            for pid in $(pgrep java); do
+              if ps -p $pid -o args= | grep -q 'java -jar'; then
+                echo "Java process with 'java -jar' found (PID: $pid). Terminating..."
+                kill -9 $pid
+              fi
+            done
+            echo "nohup java -jar ~/*.jar > ~/app.log 2>&1 &" | at now
