@@ -1,7 +1,5 @@
 package com.sparta.harmony.common.handler.exception;
 
-import com.sparta.harmony.order.exception.OrderNotFoundException;
-import com.sparta.harmony.order.exception.PaymentsNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,28 +28,6 @@ public class GlobalExceptionHandler {
                 restApiException,
                 // HTTP status code
                 HttpStatus.INTERNAL_SERVER_ERROR
-        );
-    }
-
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<RestApiException> notFoundOrderExceptionHandler(OrderNotFoundException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(
-                // HTTP body
-                restApiException,
-                // HTTP status code
-                HttpStatus.NOT_FOUND
-        );
-    }
-
-    @ExceptionHandler(PaymentsNotFoundException.class)
-    public ResponseEntity<RestApiException> notFoundPaymentsExceptionHandler(PaymentsNotFoundException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(
-                // HTTP body
-                restApiException,
-                // HTTP status code
-                HttpStatus.NOT_FOUND
         );
     }
 
