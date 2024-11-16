@@ -8,19 +8,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
-public class LoggingFilter extends OncePerRequestFilter {
+public class ReqResLoggingFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReqResLoggingFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        // request 추적을 위한 id 생성
+        MDC.put("traceId", UUID.randomUUID().toString());
 
         // 래퍼로 요청, 응답 감싸기.
         final ContentCachingRequestWrapper cachingRequestWrapper = new ContentCachingRequestWrapper(request);
@@ -59,5 +65,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         logger.info("Response Content: {}", prettyResponseBody);
 
         contentCachingResponseWrapper.copyBodyToResponse();
+
+        MDC.clear();
     }
 }
