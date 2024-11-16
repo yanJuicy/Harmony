@@ -1,5 +1,6 @@
 package com.sparta.harmony.common.config;
 
+import com.sparta.harmony.common.handler.denied.CustomAccessDeniedHandler;
 import com.sparta.harmony.jwt.JwtUtil;
 import com.sparta.harmony.security.JwtAuthenticationFilter;
 import com.sparta.harmony.security.JwtAuthorizationFilter;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final LoggingFilterConfig loggingFilterConfig;
     private final CustomLoginFailureHandler customLoginFailureHandler;
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -76,7 +78,8 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
-        );
+        ).exceptionHandling(accessDeniedHandler ->
+                accessDeniedHandler.accessDeniedHandler(customAccessDeniedHandler));
 
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

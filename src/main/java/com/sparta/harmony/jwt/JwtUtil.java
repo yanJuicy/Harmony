@@ -1,7 +1,9 @@
 package com.sparta.harmony.jwt;
 
 import com.sparta.harmony.user.entity.Role;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,7 +52,7 @@ public class JwtUtil {
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7); // "Bearer " 접두사 제거 후 반환
+            return bearerToken.substring(BEARER_PREFIX.length()); // "Bearer " 접두사 제거 후 반환
         }
         return null;
     }
