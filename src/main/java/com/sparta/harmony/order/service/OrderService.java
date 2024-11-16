@@ -33,11 +33,9 @@ public class OrderService {
 
     // 주문 생성. user 이상 사용 가능
     @Transactional
-    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
-                                        // sercurity 적용 후 jwt로 인증 객체 받아오는걸로 적용할 예정
-                                        UUID userId) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, User user) {
 
-        User userInfo = userRepository.findById(userId).orElseThrow(()
+        User userInfo = userRepository.findByEmail(user.getEmail()).orElseThrow(()
                 -> new IllegalArgumentException("유저 정보를 확인해 주세요"));
 
         Address address;
@@ -150,8 +148,7 @@ public class OrderService {
 
         // user의 경우, Jwt에서 받아온 유저 정보와 주문한 유저의 ID가 일치한지 확인 후 주문 취소 진행 필요
         Role userRoleEnum = user.getRole();
-        String email = userRepository.findById(user.getUserId()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 유저정보입니다. 다시 확인해주세요.")).getEmail();
+        String email = user.getEmail();
 
         if (userRoleEnum.equals(Role.USER)) {
             UUID userId = user.getUserId();
