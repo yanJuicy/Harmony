@@ -35,10 +35,10 @@ public class JwtUtil {
     }
 
     // JWT 토큰 생성
-    public String createToken(String username, Role role) {
+    public String createToken(String email, Role role) {
         Date date = new Date();
         return BEARER_PREFIX + Jwts.builder()
-                .setSubject(username) // 사용자 식별자 값으로 username 사용
+                .setSubject(email) // 사용자 식별자 값으로 email 사용
                 .claim(AUTHORIZATION_KEY, role) // 사용자 권한 추가
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간 설정
                 .setIssuedAt(date) // 발급 시간 설정
