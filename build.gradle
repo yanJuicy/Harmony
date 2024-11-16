@@ -47,7 +47,14 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // AOP 세팅
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // logging
+    implementation 'org.slf4j:slf4j-api'
 }
+
 clean {
     delete file('src/main/generated')
 }
