@@ -50,9 +50,9 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
         // requestbody에 password가 들어있을시 로깅x
         String requestBody = new String(cachingRequestWrapper.getContentAsByteArray(), cachingRequestWrapper.getCharacterEncoding());
         if (requestBody.contains("password")) {
-            logger.info("개인정보의 중요 부분이 포함되어 로깅이 제한됩니다.");
+            logger.info("개인정보의 중요 부분이 포함되어 Request Body 로깅이 제한됩니다.");
         } else {
-            logger.info("Request Body: {}", requestBody);
+            logger.info("Request Body: \n{}", requestBody);
         }
 
         // response 후 로깅 및 보기 좋게 다듬기.
@@ -60,6 +60,9 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT); // 줄바꿈 및 들여쓰기 활성화
 
         String responseBody = new String(contentCachingResponseWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
+
+        logger.info("Response Status: {}", contentCachingResponseWrapper.getStatus());
+        logger.info("Response Header - Authorization: {}", contentCachingResponseWrapper.getHeader("Authorization"));
 
         if (responseBody.isEmpty()) {
             logger.info("Request body is empty");
@@ -71,8 +74,7 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
         Object json = objectMapper.readValue(responseBody, Object.class); // JSON 문자열을 객체로 변환
         String prettyResponseBody = objectMapper.writeValueAsString(json); // 다시 포맷된 JSON 문자열로 변환
 
-        logger.info("Response Status: {}", contentCachingResponseWrapper.getStatus());
-        logger.info("Response Content: {}", prettyResponseBody);
+        logger.info("Response Content: \n{}", prettyResponseBody);
 
         contentCachingResponseWrapper.copyBodyToResponse();
 

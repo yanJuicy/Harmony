@@ -37,7 +37,7 @@ public class UserController {
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam LoginRequestDto loginRequestDto) {
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
         String token = userService.login(loginRequestDto);
         if (token != null) {
             return ResponseEntity.ok(token); // JWT 토큰을 클라이언트에 전달
