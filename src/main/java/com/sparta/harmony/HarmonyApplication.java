@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication  (exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @EnableAspectJAutoProxy
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "userAuditorAware")
 public class HarmonyApplication {
 
     public static void main(String[] args) {
