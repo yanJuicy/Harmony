@@ -2,6 +2,7 @@ package com.sparta.harmony.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Order;
+import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.entity.OrderTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class OrderResponseDto {
     private int totalAmount;
 
     @JsonProperty("order_menu_list")
-    private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
+    private List<OrderMenuListResponseDto> orderMenuList = new ArrayList<>();
 
     @JsonProperty("order_date")
     private LocalDateTime createdAt;
@@ -37,14 +38,18 @@ public class OrderResponseDto {
     @JsonProperty("order_type")
     private OrderTypeEnum orderType;
 
+    @JsonProperty("order_status")
+    private OrderStatusEnum orderStatus;
+
     public OrderResponseDto(Order order) {
         this.orderId = order.getOrderId();
         this.storeName = order.getStore().getStoreName();
         this.totalAmount = order.getTotalAmount();
         this.orderMenuList = order.getOrderMenuList().stream()
-                .map(OrderResponseOrderMenuListDto::new)
+                .map(OrderMenuListResponseDto::new)
                 .toList();
         this.orderType = order.getOrderType();
+        this.orderStatus = order.getOrderStatus();
         this.createdAt = order.getCreatedAt();
     }
 }

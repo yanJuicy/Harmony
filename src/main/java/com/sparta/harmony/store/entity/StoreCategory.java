@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Table(name = "p_store_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreCategory {
     @Id

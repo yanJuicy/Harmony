@@ -3,10 +3,12 @@ package com.sparta.harmony.review.controller;
 import com.sparta.harmony.review.dto.ReviewRequestDto;
 import com.sparta.harmony.review.dto.ReviewResponseDto;
 import com.sparta.harmony.review.service.ReviewService;
+import com.sparta.harmony.security.UserDetailsImpl;
 import com.sparta.harmony.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class ReviewController {
 
     // 리뷰 생성
     @PostMapping
-    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody ReviewRequestDto requestDto) {
-        ReviewResponseDto responseDto = reviewService.createReview(requestDto);
+    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody ReviewRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReviewResponseDto responseDto = reviewService.createReview(requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -49,9 +51,9 @@ public class ReviewController {
     @PutMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDto> updateReview(
             @PathVariable UUID reviewId,
-            @RequestBody ReviewRequestDto requestDto
-    ) {
-        ReviewResponseDto responseDto = reviewService.updateReview(reviewId, requestDto);
+            @RequestBody ReviewRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReviewResponseDto responseDto = reviewService.updateReview(reviewId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(responseDto);
     }
 
@@ -63,10 +65,16 @@ public class ReviewController {
 //    }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<String> deleteReview(@PathVariable UUID reviewId, User user) {
-        String deletedBy = user != null ? user.getUserName() : "system";  // 삭제한 사용자 정보
+    public ResponseEntity<String> deleteReview(@PathVariable UUID reviewId, @AuthenticationPrincipal User user) {
+        // 인증된 사용자 확인
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized: User not logged in");
+        }
 
+        // 삭제 요청 처리
+        String deletedBy = user.getUserName(); // 삭제한 사용자 정보
         reviewService.deleteReview(reviewId, deletedBy);
+
         return ResponseEntity.status(HttpStatus.OK).body("Review hidden successfully");
     }
 }

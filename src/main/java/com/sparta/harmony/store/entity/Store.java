@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Table(name = "p_store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Store extends Timestamped {
     @Id

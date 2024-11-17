@@ -2,6 +2,7 @@ package com.sparta.harmony.menu.service;
 
 import com.sparta.harmony.menu.dto.MenuCreateRequestDto;
 import com.sparta.harmony.menu.dto.MenuCreateResponseDto;
+import com.sparta.harmony.menu.dto.MenuGetResponseDto;
 import com.sparta.harmony.menu.entity.Menu;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.store.entity.Store;
@@ -46,4 +47,21 @@ public class MenuService {
                 .build();
     }
 
+    public MenuGetResponseDto getMenu(UUID storeId, UUID menuId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식점"));
+
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식"));
+
+        return MenuGetResponseDto.builder()
+                .menuId(menuId)
+                .storeId(storeId)
+                .name(menu.getName())
+                .description(menu.getDescription())
+                .imageUrl(menu.getImageUrl())
+                .price(menu.getPrice())
+                .isAvailable(menu.isAvailable())
+                .build();
+    }
 }

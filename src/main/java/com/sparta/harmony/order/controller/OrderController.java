@@ -1,14 +1,21 @@
 package com.sparta.harmony.order.controller;
 
-import com.sparta.harmony.order.dto.*;
-import com.sparta.harmony.order.entity.OrderStatusEnum;
-import com.sparta.harmony.order.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.order.dto.OrderDetailResponseDto;
+import com.sparta.harmony.order.dto.OrderRequestDto;
+import com.sparta.harmony.order.dto.OrderResponseDto;
+import com.sparta.harmony.order.dto.OrderStatusRequestDto;
 import com.sparta.harmony.order.service.OrderService;
-import com.sparta.harmony.user.entity.User;
+import com.sparta.harmony.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,11 +28,11 @@ public class OrderController {
     private final OrderService orderService;
 
     // user 이상 사용 가능.
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @PostMapping("/orders")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody OrderRequestDto orderRequestDto,
-                                                                        // security 적용 후 jwt 인증객체 받아오은걸로 변경 예정
-                                                                        @RequestParam(value = "user_id") UUID userId) {
-        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> createOrder(@RequestBody @Valid OrderRequestDto orderRequestDto,
+                                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userDetails.getUser());
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.CREATED,
@@ -34,9 +41,11 @@ public class OrderController {
     }
 
     // user 이상 사용 가능
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<ApiResponseDto<OrderResponseDto>> cancelOrder(@PathVariable UUID orderId, User user) {
-        OrderResponseDto orderResponseDto = orderService.softDeleteOrder(orderId, user);
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> cancelOrder(@PathVariable UUID orderId,
+                                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        OrderResponseDto orderResponseDto = orderService.softDeleteOrder(orderId, userDetails.getUser());
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.OK,
@@ -45,15 +54,16 @@ public class OrderController {
     }
 
     // user 이상 사용 가능.
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @GetMapping("/orders")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrders(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrders(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "is_asc", defaultValue = "false") boolean isAsc,
-            User user
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        Page<OrderResponseDto> orderResponseDto = orderService.getOrders(user, page - 1, size, sortBy, isAsc);
+        Page<OrderResponseDto> orderResponseDto = orderService.getOrders(userDetails.getUser(), page - 1, size, sortBy, isAsc);
 
         return new SuccessResponseHandler().handlePageSuccess(
                 HttpStatus.OK,
@@ -63,9 +73,11 @@ public class OrderController {
     }
 
     // user 이상 사용가능
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> getOrderByOrderId(@PathVariable UUID orderId, User user) {
-        OrderDetailResponseDto orderDetailResponseDto = orderService.getOrderByOrderId(orderId, user);
+    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> getOrderByOrderId(@PathVariable UUID orderId,
+                                                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        OrderDetailResponseDto orderDetailResponseDto = orderService.getOrderByOrderId(orderId, userDetails.getUser());
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.OK,
@@ -74,8 +86,9 @@ public class OrderController {
     }
 
     // owner 이상만 사용 가능
+    @PreAuthorize("hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @GetMapping("/orders/store/{storeId}")
-    public ResponseEntity<ApiResponsePageDto<OrderResponseDto>> getOrderByStoreId(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrderByStoreId(
             @PathVariable UUID storeId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
@@ -91,17 +104,18 @@ public class OrderController {
     }
 
     // owner 이상 사용 가능
+    @PreAuthorize("hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> updateOrderStatus(
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> updateOrderStatus(
             @PathVariable UUID orderId,
-            @RequestBody OrderRequestDto orderRequestDto
+            @RequestBody @Valid OrderStatusRequestDto orderStatusDto
             ) {
-        OrderDetailResponseDto orderDetailResponseDto = orderService.updateOrderStatus(orderId, orderRequestDto);
+        OrderResponseDto orderResponseDto = orderService.updateOrderStatus(orderId, orderStatusDto);
 
         return new SuccessResponseHandler().handleSuccess(
                 HttpStatus.OK,
                 "수정이 완료되었습니다.",
-                orderDetailResponseDto
+                orderResponseDto
         );
     }
 }

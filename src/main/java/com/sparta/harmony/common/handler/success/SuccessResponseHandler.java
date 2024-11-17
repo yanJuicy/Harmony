@@ -1,6 +1,7 @@
-package com.sparta.harmony.order.handler.success;
+package com.sparta.harmony.common.handler.success;
 
-import com.sparta.harmony.order.dto.*;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.dto.ApiPageResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,10 @@ public class SuccessResponseHandler {
     }
 
     @ResponseBody
-    public <T> ResponseEntity<ApiResponsePageDto<T>> handlePageSuccess(HttpStatus status, String message, Page<T> page) {
+    public <T> ResponseEntity<ApiPageResponseDto<T>> handlePageSuccess(HttpStatus status, String message, Page<T> page) {
         List<T> content = page.getContent(); // 현재 페이지의 데이터
 
-        ApiResponsePageDto<T> response = new ApiResponsePageDto<>(
+        ApiPageResponseDto<T> response = new ApiPageResponseDto<>(
                 status.value(),
                 message,
                 page.getNumber(), // 현재 페이지 번호

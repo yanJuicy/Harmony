@@ -1,4 +1,4 @@
-package com.sparta.harmony.order.handler.exception;
+package com.sparta.harmony.common.handler.exception;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

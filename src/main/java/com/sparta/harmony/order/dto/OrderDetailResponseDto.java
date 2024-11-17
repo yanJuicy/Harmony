@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.harmony.order.entity.Order;
 import com.sparta.harmony.order.entity.OrderStatusEnum;
 import com.sparta.harmony.order.entity.OrderTypeEnum;
-import com.sparta.harmony.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +33,7 @@ public class OrderDetailResponseDto {
     private UUID paymentsId;
 
     @JsonProperty("order_menu_list")
-    private List<OrderResponseOrderMenuListDto> orderMenuList = new ArrayList<>();
+    private List<OrderMenuListResponseDto> orderMenuList = new ArrayList<>();
 
     @JsonProperty("order_date")
     private LocalDateTime createdAt;
@@ -65,7 +64,7 @@ public class OrderDetailResponseDto {
         this.totalAmount = order.getTotalAmount();
         this.paymentsId = order.getPayments().getPaymentsId();
         this.orderMenuList = order.getOrderMenuList().stream()
-                .map(OrderResponseOrderMenuListDto::new)
+                .map(OrderMenuListResponseDto::new)
                 .toList();
         this.createdAt = order.getCreatedAt();
         this.orderType = order.getOrderType();
