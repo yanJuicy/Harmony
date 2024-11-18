@@ -26,7 +26,7 @@ public class MenuService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식점"));
 
-        String aiCreateMenuDescription = aiService.aiCreateMenuDescription(menuRequestDto.getDescription());
+        String aiCreateMenuDescription = aiService.aiCreateMenuDescription(menuRequestDto.getDescriptionRequest());
 
         Menu menu = Menu.builder()
                 .name(menuRequestDto.getName())
@@ -38,7 +38,7 @@ public class MenuService {
                 .build();
 
         Menu savedMenu = menuRepository.save(menu);
-        aiService.save(menuRequestDto.getDescription(), aiCreateMenuDescription, savedMenu);
+        aiService.save(menuRequestDto.getDescriptionRequest(), aiCreateMenuDescription, savedMenu);
 
         return MenuResponseDto.builder()
                 .menuId(savedMenu.getMenuId())

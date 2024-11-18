@@ -9,7 +9,7 @@ public class MenuRequestDto {
 
     private boolean isAvailable;
     private String name;
-    private String description;
+    private String descriptionRequest;
     private int price;
     private String imageUrl;
 
