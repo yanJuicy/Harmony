@@ -70,7 +70,7 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
             MDC.clear();
 
             return;
-        } else if (responseBody.contains("<html")) {
+        } else if (responseBody.contains("<html") || responseBody.contains("swagger-ui/oauth2-redirect.html") || responseBody.contains("localhost:8080")) {
             logger.info("html response");
             contentCachingResponseWrapper.copyBodyToResponse();
             MDC.clear();
