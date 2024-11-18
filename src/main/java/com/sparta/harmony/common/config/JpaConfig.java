@@ -8,11 +8,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.Optional;
 
-@Configuration
+//@Configuration
 public class JpaConfig {
 
-    @Bean
+//    @Bean
     public AuditorAware<String> auditorProvider() {
+
         return () -> Optional.of("system");  // 기본 작성자 정보 설정
     }
 }

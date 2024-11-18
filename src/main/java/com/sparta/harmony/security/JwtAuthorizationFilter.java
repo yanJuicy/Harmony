@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -37,6 +38,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             if (!jwtUtil.validateToken(tokenValue)) {
                 log.error("Token Error");
+                res.setContentType("application/json; charset=UTF-8");
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                String jsonResponse = "{\"status\": " + HttpServletResponse.SC_UNAUTHORIZED + ", \"message\": \"Token Error\"}";
+
+                PrintWriter out = res.getWriter();
+                out.print(jsonResponse);
+                out.flush();
                 return;
             }
 
