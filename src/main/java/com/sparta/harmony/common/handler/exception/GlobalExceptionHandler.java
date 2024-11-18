@@ -6,7 +6,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = {"com.sparta.harmony.order.controller"})
+@RestControllerAdvice(basePackages = {
+        "com.sparta.harmony.order.controller",
+        "com.sparta.harmony.menu.controller"
+})
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)

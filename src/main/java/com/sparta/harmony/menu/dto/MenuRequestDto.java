@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MenuCreateRequestDto {
+public class MenuRequestDto {
 
     private boolean isAvailable;
     private String name;

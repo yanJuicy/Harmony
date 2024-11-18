@@ -1,8 +1,9 @@
 package com.sparta.harmony.menu.controller;
 
-import com.sparta.harmony.menu.dto.MenuCreateRequestDto;
-import com.sparta.harmony.menu.dto.MenuCreateResponseDto;
-import com.sparta.harmony.menu.dto.MenuGetResponseDto;
+import com.sparta.harmony.common.dto.ApiResponseDto;
+import com.sparta.harmony.common.handler.success.SuccessResponseHandler;
+import com.sparta.harmony.menu.dto.MenuRequestDto;
+import com.sparta.harmony.menu.dto.MenuResponseDto;
 import com.sparta.harmony.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,19 +25,17 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping("/{storeId}/menus")
-    public ResponseEntity<MenuCreateResponseDto> create(@PathVariable String storeId, @RequestBody MenuCreateRequestDto menuCreateRequestDto) {
-        MenuCreateResponseDto result = menuService.createMenu(UUID.fromString(storeId), menuCreateRequestDto);
+    public ResponseEntity<ApiResponseDto<MenuResponseDto>> create(@PathVariable String storeId, @RequestBody MenuRequestDto menuRequestDto) {
+        MenuResponseDto result = menuService.createMenu(UUID.fromString(storeId), menuRequestDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(result);
+        return new SuccessResponseHandler().handleSuccess(HttpStatus.CREATED, "메뉴 생성 성공", result);
     }
 
     @GetMapping("/{storeId}/menus/{menuId}")
-    public ResponseEntity<MenuGetResponseDto> get(@PathVariable String storeId, @PathVariable String menuId) {
-        MenuGetResponseDto result = menuService.getMenu(UUID.fromString(storeId), UUID.fromString(menuId));
+    public ResponseEntity<ApiResponseDto<MenuResponseDto>> get(@PathVariable String storeId, @PathVariable String menuId) {
+        MenuResponseDto result = menuService.getMenu(UUID.fromString(storeId), UUID.fromString(menuId));
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(result);
+        return new SuccessResponseHandler().handleSuccess(HttpStatus.CREATED, "메뉴 조회 성공", result);
     }
 
 

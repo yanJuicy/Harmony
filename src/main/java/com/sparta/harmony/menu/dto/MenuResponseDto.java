@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class MenuGetResponseDto {
+public class MenuResponseDto {
 
     private UUID storeId;
     private UUID menuId;
@@ -17,8 +17,8 @@ public class MenuGetResponseDto {
     private String imageUrl;
 
     @Builder
-    public MenuGetResponseDto(UUID storeId, UUID menuId, String name, String description,
-                              int price, boolean isAvailable, String imageUrl) {
+    public MenuResponseDto(UUID storeId, UUID menuId, String name, String description,
+                           int price, boolean isAvailable, String imageUrl) {
         this.storeId = storeId;
         this.menuId = menuId;
         this.name = name;
