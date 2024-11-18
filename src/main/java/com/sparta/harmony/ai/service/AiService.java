@@ -63,6 +63,10 @@ public class AiService {
             JSONArray parts = (JSONArray) content.get("parts");
             String response = (String) ((JSONObject) parts.get(0)).get("text");
 
+            if (response.contains("Please provide me")) {
+                throw new IllegalArgumentException("AI에게 메뉴를 설명해달라고 작성해주세요.");
+            }
+
             return response;
         } catch (ParseException e) {
             e.printStackTrace();
