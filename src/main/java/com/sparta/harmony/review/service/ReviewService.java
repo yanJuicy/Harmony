@@ -32,9 +32,6 @@ public class ReviewService {
     public ReviewResponseDto createReview(ReviewRequestDto requestDto, User user) {
         Order order = orderRepository.findById(requestDto.getOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Order ID"));
-        if(!order.getUser().equals(user)){
-            throw new IllegalArgumentException("이 주문은 해당 사용자에게 속하지 않습니다.");
-        }
         Store store = storeRepository.findById(requestDto.getStoreId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Store ID"));
 
@@ -98,15 +95,6 @@ public class ReviewService {
         review.updateReview(requestDto.getComment(), requestDto.getRating());
         return new ReviewResponseDto(review);
     }
-
-    //리뷰 삭제
-//    @Transactional
-//    public void deleteReview(UUID reviewId) {
-//        Review review = reviewRepository.findById(reviewId)
-//                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
-//
-//        reviewRepository.delete(review);
-//    }
 
     @Transactional
     public void deleteReview(UUID reviewId, String deletedBy) {
