@@ -4,7 +4,7 @@
 
    ° Spring Boot를 사용한 안정적인 웹 구현, PostgreSQL로 데이터 관리합니다. <br>
     ° 유지보수성을 높이기 위해 JPA를 선택해 Spring Data JPA와의 통합을 통한 효율적인 데이터 처리를 하고자 했습니다.<br>
-      ° JPA의 ORM 기능을 활용하여 객체와 데이터베이스 간의 매핑을 최적화하고, JPQL로 복잡한 쿼리도 간결하게 작성했습니다. <br>
+      ° JPA의 ORM 기능을 활용하여 객체와 데이터베이스 간의 매핑을 최적화했습니다. <br>
         ° API 명세서 : https://caring-pin-8ac.notion.site/API-136dcca716cf808aa2fdee25878f0747
 
   <br>
