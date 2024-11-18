@@ -91,37 +91,18 @@ public class OrderService {
         }
 
         return orderList.map(OrderResponseDto::new);
-
-//        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
-//
-//        return orderResponseDto;
-//                new OrderResponsePageDto(
-//                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
-//                orderResponseDto.getTotalPages(),
-//                orderResponseDto.getTotalElements(),
-//                orderResponseDto.getSize(),
-//                orderResponseDto.getContent()
-//        );
     }
 
     // 특정 가게의 주문 조회. OWNER 이상 사용자만 조회 가능
     @Transactional(readOnly = true)
-    public OrderResponsePageDto getOrdersByStoreId(UUID storeId, int page, int size,
+    public Page<OrderResponseDto> getOrdersByStoreId(UUID storeId, int page, int size,
                                                    String sortBy, boolean isAsc) {
         // 페이징 처리
         Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;
         orderList = orderRepository.findOrderByStoreIdAndDeletedFalse(storeId, pageable);
 
-        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
-
-        return new OrderResponsePageDto(
-                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
-                orderResponseDto.getTotalPages(),
-                orderResponseDto.getTotalElements(),
-                orderResponseDto.getSize(),
-                orderResponseDto.getContent()
-        );
+        return orderList.map(OrderResponseDto::new);
     }
 
     // 주문 ID를 이용한 주문 상세 조회. user와 owner는 자신의 주문만 상세 조회 가능.
