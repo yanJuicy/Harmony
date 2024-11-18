@@ -72,12 +72,11 @@ public class OrderService {
         orderRepository.save(order);
 
         return new OrderResponseDto(order);
-
     }
 
     // 주문 조회. user이상 조회 가능
     @Transactional(readOnly = true)
-    public OrderResponsePageDto getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
+    public Page<OrderResponseDto> getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
         // 페이징 처리
         Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;
@@ -86,20 +85,23 @@ public class OrderService {
         Role userRoleEnum = user.getRole();
 
         if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
-            orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
+            orderList = orderRepository.findAllByUserAndDeletedFalse(user, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
         }
 
-        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
+        return orderList.map(OrderResponseDto::new);
 
-        return new OrderResponsePageDto(
-                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
-                orderResponseDto.getTotalPages(),
-                orderResponseDto.getTotalElements(),
-                orderResponseDto.getSize(),
-                orderResponseDto.getContent()
-        );
+//        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
+//
+//        return orderResponseDto;
+//                new OrderResponsePageDto(
+//                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
+//                orderResponseDto.getTotalPages(),
+//                orderResponseDto.getTotalElements(),
+//                orderResponseDto.getSize(),
+//                orderResponseDto.getContent()
+//        );
     }
 
     // 특정 가게의 주문 조회. OWNER 이상 사용자만 조회 가능

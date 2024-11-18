@@ -12,7 +12,6 @@ import java.util.List;
 @Schema(description = "Api Page 응답 Dto")
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class ApiPageResponseDto<T> {
 
@@ -39,4 +38,14 @@ public class ApiPageResponseDto<T> {
     @Schema(description = "응답 Data")
     @JsonProperty("data")
     private List<T> data;
+
+    public ApiPageResponseDto(int status, String message, int page, int size, long totalElements, int totalPage, List<T> data) {
+        this.status = status;
+        this.message = message;
+        this.page = page + 1;
+        this.size = size;
+        this.totalElements = totalElements;
+        this.totalPage = totalPage;
+        this.data = data;
+    }
 }
