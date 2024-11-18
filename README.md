@@ -33,8 +33,8 @@
 - 24-11-07 ~ 24-11-18(총 12일)
   
 ## 3. 아키텍쳐
-
-
+![image](https://github.com/user-attachments/assets/7c5a7828-278a-4b26-869e-0d61f56cac71)
+![image](https://github.com/user-attachments/assets/17df5f3b-defe-4cfe-8066-145da7ef0874)
 ## 4. ERD 
 ![image](https://github.com/user-attachments/assets/4336fe28-0665-4488-a408-5f1ee4028a93)
 
