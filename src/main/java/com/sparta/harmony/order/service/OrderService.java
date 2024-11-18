@@ -72,7 +72,6 @@ public class OrderService {
         orderRepository.save(order);
 
         return new OrderResponseDto(order);
-
     }
 
     // 주문 조회. user이상 조회 가능
@@ -86,7 +85,7 @@ public class OrderService {
         Role userRoleEnum = user.getRole();
 
         if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
-            orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
+            orderList = orderRepository.findAllByUserAndDeletedFalse(user, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
         }
@@ -97,7 +96,7 @@ public class OrderService {
     // 특정 가게의 주문 조회. OWNER 이상 사용자만 조회 가능
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> getOrdersByStoreId(UUID storeId, int page, int size,
-                                                     String sortBy, boolean isAsc) {
+                                                   String sortBy, boolean isAsc) {
         // 페이징 처리
         Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;

@@ -1,15 +1,11 @@
 package com.sparta.harmony.user.service;
 
-import com.sparta.harmony.jwt.JwtUtil;
-import com.sparta.harmony.user.dto.LoginRequestDto;
-import com.sparta.harmony.user.entity.User;
-import com.sparta.harmony.user.repository.UserRepository;
 import com.sparta.harmony.user.dto.UserRequestDto;
 import com.sparta.harmony.user.dto.UserResponseDto;
+import com.sparta.harmony.user.entity.User;
+import com.sparta.harmony.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +18,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
     // 유저 생성
     @Transactional
@@ -37,21 +32,6 @@ public class UserService {
                 .build();
         userRepository.save(user);
         return new UserResponseDto(user);
-    }
-
-    // 로그인 - 토큰발급
-    @Transactional(readOnly = true)
-    public String login(LoginRequestDto loginRequestDto) {
-        User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        // 비밀번호 확인
-        if (passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            // 비밀번호가 맞으면 JWT 토큰을 생성하여 반환
-            return jwtUtil.createToken(user.getEmail(), user.getRole());
-        } else {
-            return null; // 로그인 실패
-        }
     }
 
     // 유저 조회

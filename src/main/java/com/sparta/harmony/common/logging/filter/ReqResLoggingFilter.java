@@ -17,6 +17,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -65,7 +66,13 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
         logger.info("Response Header - Authorization: {}", contentCachingResponseWrapper.getHeader("Authorization"));
 
         if (responseBody.isEmpty()) {
-            logger.info("Request body is empty");
+            logger.info("Response body is empty");
+            MDC.clear();
+
+            return;
+        } else if (responseBody.contains("<html") || responseBody.contains("swagger-ui/oauth2-redirect.html") || responseBody.contains("localhost:8080")) {
+            logger.info("html response");
+            contentCachingResponseWrapper.copyBodyToResponse();
             MDC.clear();
 
             return;
@@ -79,5 +86,19 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
         contentCachingResponseWrapper.copyBodyToResponse();
 
         MDC.clear();
+    }
+
+    // swagger의 경우, 이후 필터(security)를 진행시키지 않도록 설정..
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePath = {"/swagger-ui/",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-resources/**",
+                "/webjars/**"};
+        String path = request.getRequestURI();
+//        boolean shouldNotFilter = Arrays.stream(excludePath).anyMatch(path::startsWith);
+//        logger.info("shouldNotFilter: {} for path: {}", shouldNotFilter, path);
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
 }
