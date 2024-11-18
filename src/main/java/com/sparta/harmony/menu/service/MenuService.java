@@ -1,5 +1,6 @@
 package com.sparta.harmony.menu.service;
 
+import com.sparta.harmony.ai.service.AiService;
 import com.sparta.harmony.menu.dto.MenuRequestDto;
 import com.sparta.harmony.menu.dto.MenuResponseDto;
 import com.sparta.harmony.menu.entity.Menu;
@@ -19,14 +20,17 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final AiService aiService;
 
     public MenuResponseDto createMenu(UUID storeId, MenuRequestDto menuRequestDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식점"));
 
+        String aiCreateMenuDescription = aiService.aiCreateMenuDescription(menuRequestDto.getDescription());
+
         Menu menu = Menu.builder()
                 .name(menuRequestDto.getName())
-                .description(menuRequestDto.getDescription())
+                .description(aiCreateMenuDescription)
                 .price(menuRequestDto.getPrice())
                 .imageUrl(menuRequestDto.getImageUrl())
                 .isAvailable(menuRequestDto.isAvailable())
@@ -34,6 +38,7 @@ public class MenuService {
                 .build();
 
         Menu savedMenu = menuRepository.save(menu);
+        aiService.save(menuRequestDto.getDescription(), aiCreateMenuDescription, savedMenu);
 
         return MenuResponseDto.builder()
                 .menuId(savedMenu.getMenuId())
