@@ -34,7 +34,7 @@ public class PaymentsService {
         Role userRoleEnum = user.getRole();
 
         if (userRoleEnum == Role.USER || userRoleEnum == Role.OWNER) {
-            paymentsList = paymentsRepository.findAllByUserAndDeletedByFalse(user, pageable);
+            paymentsList = paymentsRepository.findAllByUserAndDeletedFalse(user, pageable);
         } else {
             paymentsList = paymentsRepository.findAllByDeletedFalse(pageable);
         }

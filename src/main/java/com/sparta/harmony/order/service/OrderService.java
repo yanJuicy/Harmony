@@ -3,6 +3,7 @@ package com.sparta.harmony.order.service;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
+import com.sparta.harmony.order.repository.OrderMenuRepository;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,6 +32,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final OrderMenuRepository orderMenuRepository;
 
     // 주문 생성. user 이상 사용 가능
     @Transactional
@@ -157,14 +160,17 @@ public class OrderService {
                 throw new IllegalArgumentException("다른 유저의 주문은 취소할 수 없습니다.");
             }
         }
-        softDeleteOrderAndDeleteOrderMenu(order, email);
+        List<OrderMenu> orderMenuList = orderMenuRepository.findAllByOrder(order);
+        for (OrderMenu orderMenu : orderMenuList) {
+            orderMenu.softDelete(email);
+        }
 
+        order.softDelete(email);
         order.updateOrderStatus(OrderStatusEnum.CANCELED);
         orderRepository.save(order);
+        orderMenuRepository.saveAll(orderMenuList);
 
-        return OrderResponseDto.builder()
-                .orderId(orderId)
-                .build();
+        return new OrderResponseDto(order);
     }
 
     private void softDeleteOrderAndDeleteOrderMenu(Order order, String email) {
