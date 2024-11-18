@@ -43,7 +43,7 @@ public class AiService {
                 "    \"contents\": {\n" +
                 "        \"parts\": [\n" +
                 "            {\n" +
-                "                \"text\": " + requestText +
+                "                \"text\": " + "\"" + requestText + "\"" +
                 "            }\n" +
                 "        ]\n" +
                 "    }\n" +
@@ -65,7 +65,8 @@ public class AiService {
 
             return response;
         } catch (ParseException e) {
-            throw new RuntimeException("AI 요청이 잘못 됐습니다.");
+            e.printStackTrace();
+            throw new IllegalArgumentException("AI에게 메뉴를 설명해달라고 작성해주세요.");
         }
     }
 
