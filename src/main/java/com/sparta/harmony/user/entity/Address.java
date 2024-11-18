@@ -1,5 +1,6 @@
 package com.sparta.harmony.user.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +12,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 public class Address {
+
     private String addrUUID;
+
+    @Column(length = 6)
     private String postcode;
+
+    @Column(length = 200)
     private String address;
+
     private String detailAddress;
 
     @Builder

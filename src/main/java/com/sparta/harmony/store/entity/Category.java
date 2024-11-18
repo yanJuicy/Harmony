@@ -13,11 +13,12 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Table(name = "p_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID storeCategoryId;
+    private UUID categoryId;
 
     @Column(nullable = false)
     private String categoryName;
@@ -26,9 +27,11 @@ public class Category extends Timestamped {
     private List<StoreCategory> storeCategories = new ArrayList<>();
 
     @Builder
-    public Category(UUID storeCategoryId, String categoryName, List<StoreCategory> storeCategories) {
-        this.storeCategoryId = storeCategoryId;
+    public Category(String categoryName) {
         this.categoryName = categoryName;
-        this.storeCategories = storeCategories;
+    }
+
+    public void updateCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
