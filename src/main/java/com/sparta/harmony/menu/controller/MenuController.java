@@ -37,7 +37,7 @@ public class MenuController {
     public ResponseEntity<ApiResponseDto<MenuResponseDto>> get(@PathVariable String storeId, @PathVariable String menuId) {
         MenuResponseDto result = menuService.getMenu(UUID.fromString(storeId), UUID.fromString(menuId));
 
-        return new SuccessResponseHandler().handleSuccess(HttpStatus.CREATED, "메뉴 조회 성공", result);
+        return new SuccessResponseHandler().handleSuccess(HttpStatus.OK, "메뉴 조회 성공", result);
     }
 
 
