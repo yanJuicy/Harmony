@@ -12,11 +12,12 @@ import java.util.UUID;
 
 @Repository
 public interface PaymentsRepository extends JpaRepository<Payments, UUID>, PaymentsRepositoryCustom {
-    Page<Payments> findAllByUserAndDeletedByFalse(User user, Pageable pageable);
 
     Page<Payments> findAllByDeletedFalse(Pageable pageable);
 
     Optional<Payments> findByPaymentsIdAndUserAndDeletedFalse(UUID paymentsId, User user);
 
     Optional<Payments> findByPaymentsIdAndDeletedFalse(UUID paymentsId);
+
+    Page<Payments> findAllByUserAndDeletedFalse(User user, Pageable pageable);
 }
