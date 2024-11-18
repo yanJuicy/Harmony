@@ -25,6 +25,7 @@ jobs:
       - name: echo secret key
         run: echo "${{ secrets.AI_KEY }}" > ./src/main/resources/application-secret.properties
 
+      - run: cat ./src/main/resources/application-secret.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
