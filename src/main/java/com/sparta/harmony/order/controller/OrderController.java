@@ -81,8 +81,7 @@ public class OrderController {
     ) {
         Page<OrderResponseDto> orderResponseDto = orderService.getOrders(userDetails.getUser(), page - 1, size, sortBy, isAsc);
 
-        return successResponseHandler.handlePageSuccess(HttpStatus.OK, "조회 완료",
-                orderResponseDto);
+        return successResponseHandler.handlePageSuccess(HttpStatus.OK, "조회 완료", orderResponseDto);
     }
 
     // user 이상 사용가능
@@ -94,12 +93,11 @@ public class OrderController {
     @Parameter(name = "orderId", description = "주문 ID", example = "92e09e78-d0fd-4fdd-b335-4971d501bf6c")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_OWNER')  or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<OrderDetailResponseDto> getOrderByOrderId(@PathVariable UUID orderId,
+    public ResponseEntity<ApiResponseDto<OrderDetailResponseDto>> getOrderByOrderId(@PathVariable UUID orderId,
                                                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         OrderDetailResponseDto orderDetailResponseDto = orderService.getOrderByOrderId(orderId, userDetails.getUser());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(orderDetailResponseDto);
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "조회가 완료되었습니다.", orderDetailResponseDto);
     }
 
     // owner 이상만 사용 가능
@@ -111,17 +109,16 @@ public class OrderController {
     @Parameter(name = "storeId", description = "가게 ID", example = "cab802e2-d172-4ddb-8e25-d2787122a9cc")
     @PreAuthorize("hasAuthority('ROLE_OWNER') or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @GetMapping("/orders/store/{storeId}")
-    public ResponseEntity<OrderResponsePageDto> getOrderByStoreId(
+    public ResponseEntity<ApiPageResponseDto<OrderResponseDto>> getOrderByStoreId(
             @PathVariable UUID storeId,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "createdAt") String sortBy,
             @RequestParam(value = "is_asc", defaultValue = "false") boolean isAsc) {
 
-        OrderResponsePageDto orderResponsePageDto = orderService.getOrdersByStoreId(storeId, page - 1, size, sortBy, isAsc);
+        Page<OrderResponseDto> orderResponseDto = orderService.getOrdersByStoreId(storeId, page - 1, size, sortBy, isAsc);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(orderResponsePageDto);
+        return successResponseHandler.handlePageSuccess(HttpStatus.OK, "조회가 완료되었습니다.", orderResponseDto);
     }
 
     // owner 이상 사용 가능
@@ -133,13 +130,12 @@ public class OrderController {
     @Parameter(name = "orderId", description = "주문 ID", example = "92e09e78-d0fd-4fdd-b335-4971d501bf6c")
     @PreAuthorize("hasAuthority('ROLE_OWNER') or hasAuthority('ROLE_MANAGER') or hasAuthority('ROLE_MASTER')")
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateOrderStatus(
+    public ResponseEntity<ApiResponseDto<OrderResponseDto>> updateOrderStatus(
             @PathVariable UUID orderId,
             @RequestBody @Valid OrderStatusRequestDto orderStatusDto
     ) {
         OrderResponseDto orderResponseDto = orderService.updateOrderStatus(orderId, orderStatusDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(orderResponseDto);
+        return successResponseHandler.handleSuccess(HttpStatus.OK, "수정이 완료되었습니다.", orderResponseDto);
     }
 }
