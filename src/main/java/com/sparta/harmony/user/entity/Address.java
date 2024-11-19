@@ -18,16 +18,17 @@ public class Address {
     @Column(length = 6)
     private String postcode;
 
-    @Column(length = 200)
+    @Column(length = 300)
     private String address;
 
     private String detailAddress;
 
+
     @Builder
     public Address(String postcode, String address, String detailAddress) {
         this.addrUUID = UUID.randomUUID().toString();
-        this.postcode = postcode;
         this.address = address;
         this.detailAddress = detailAddress;
+        this.postcode = postcode;
     }
 }
