@@ -296,8 +296,10 @@ client의 request에 가장 먼저 filter를 거쳐 어떤 요청이 오는지 �
 *Order controller, Payment controller만 custom 되어있습니다만, 현재는 UUID가 맞지 않는 것이 많이 있어 수정중에 있습니다 ㅜㅜ*
 
 ### Test code와 Debugging
-이번에 프로젝트를 할 때 test code와 debugging을 많이 활용하지 못한 부분이 아쉬웠습니다. 서비스 로직을 만들고 app 실행 후 postman으로 검증하는 부분이 많았기 때문에 
-이전에 unit test 등을 많이 하였으면 조기에 문제를 발견 했을텐데..하는 생각을 많이 했었습니다. debugging도 마찬가지로 console에 하나하나 출력해보는 경우가 많았는데
+이번에 프로젝트를 할 때 test code와 debugging을 많이 활용하지 못한 부분이 아쉬웠습니다. 
+서비스 로직을 만들고 app 실행 후 postman으로 검증하는 부분이 많았기 때문에 이전에 unit test 등을 많이 하였으면 조기에 문제를 발견 했을텐데..하는 생각을 많이 했었습니다. 
+
+debugging도 마찬가지로 console에 하나하나 출력해보는 경우가 많았는데
 다음부터는 debugging을 이용해서 bug를 찾고 코드를 수정할 수 있도록 해야겠습니다.
 
 ### 데이터 무결성 유지
