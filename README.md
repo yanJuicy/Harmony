@@ -290,3 +290,15 @@ client의 request에 가장 먼저 filter를 거쳐 어떤 요청이 오는지 �
 직접 swagger 사용해보고 싶으시면 [click here](http://ec2-3-35-214-44.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html)
 
 *Order controller, Payment controller만 custom 되어있습니다만, 현재는 UUID가 맞지 않는 것이 많이 있어 수정중에 있습니다 ㅜㅜ*
+
+### 데이터 무결성 유지
+- **문제**:
+  - 리뷰 생성 시 주문 및 음식점 정보가 유효하지 않거나 삭제된 데이터가 노출되는 문제 발생.
+- **해결 방안**:
+  - 소프트 삭제 상태를 필터링하는 로직을 추가.
+
+## 느낀 점
+
+### 도메인 지식의 필요성
+
+- 단순히 기술을 구현하는 것을 넘어 음식 주문 관리 플랫폼의 도메인 로직을 깊이 이해하고 이를 코드로 풀어내는 과정이 중요하다고 생각.
