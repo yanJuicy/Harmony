@@ -262,11 +262,15 @@ public class ReqResLoggingFilter extends OncePerRequestFilter {
     }
 }
 ```
+
+![image](https://github.com/user-attachments/assets/16bcc7bd-d60d-4de3-8229-9216695ece75)
+
+
 AOP 방식을 택해서 좀더 controller단과 가까운 곳에서 메소드의 흐름을 보도록 할것인지 아니면 filter쪽에 적용을 해서 request를 받아오는 가장 가까운 곳에서 req를 볼 것인지..
 적용 시점이 일단 어느정도 개발이 진행된 상태여서 저는 filter쪽에 logging을 넣어 req와 res를 파악하기 쉽게 해보도록 하였습니다.
 
-전체적인 흐름으로 보면 각 req마다 traceId를 uuid로 생성하여 요청을 추적할 수 있게 하였고 요청 url이 어디인지, header는 뭐가 있는지, body에는 뭐가 있는지 등등을 확인할 수 있습니다.
-res는 header에 jwt가 있는지, body에는 어떤 것이 있는지 확인할 수 있습니다.
+전체적인 흐름으로 보면 각 request마다 traceId를 uuid로 생성하여 요청을 추적할 수 있게 하였고 요청 url이 어디인지, header는 뭐가 있는지, body에는 뭐가 있는지 등등을 확인할 수 있습니다.
+response는 header에 jwt가 있는지, body에는 어떤 것이 있는지 확인할 수 있습니다.
 
 프로젝트에는 security가 적용되어 있는데 security filter의 경우 우선순위가 최상위 (-100)로 설정되어 가장 빠르게 되어 있습니다. 
 그렇기 때문에 security config에서 가장 빠른 filter앞에 오도록 설정해주고, @order를 이용해 순서를 최상위로 만들어서 
