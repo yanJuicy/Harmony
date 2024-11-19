@@ -13,6 +13,7 @@ import com.sparta.harmony.store.repository.CategoryRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+
 public class StoreService {
 
     private final StoreRepository storeRepository;
@@ -47,7 +50,7 @@ public class StoreService {
     @Transactional
     public StoreResponseDto createStore(StoreRequestDto storeRequestDto) {
 
-        Address address = new Address(storeRequestDto.getAddress(), storeRequestDto.getDetailAddress(), storeRequestDto.getPostcode());
+        Address address = new Address(storeRequestDto.getPostcode(),storeRequestDto.getAddress(), storeRequestDto.getDetailAddress());
 
         Store store = Store.builder()
                 .storeName(storeRequestDto.getStoreName())
@@ -61,6 +64,7 @@ public class StoreService {
                 .map(categoryId -> {
                     Category category = categoryRepository.findById(categoryId)
                             .orElseThrow(() -> new IllegalArgumentException("카테고리 아이디를 찾을 수 없습니다.: " + categoryId));
+
                     return StoreCategory.builder()
                             .store(store)
                             .category(category)
@@ -122,25 +126,33 @@ public class StoreService {
     }
 
     public Object searchStores(String searchKeyword, Pageable pageable) {
-        // 검색어가 없을 경우, 메시지 반환
         if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
             return List.of("검색어를 입력해주세요");
         }
 
-        // 검색어가 있을 경우 해당 검색어로 음식점 검색
         Page<Store> storesPage = storeRepository.findByStoreNameContaining(searchKeyword, pageable);
-
-        // 검색 결과가 없을 경우, 메시지 반환
         if (storesPage.isEmpty()) {
             return List.of("해당 검색어의 음식점이 없습니다");
         }
 
-        return storesPage.map(store -> new StoreSearchResponseDto(store.getStoreName(), getAverageRating(store.getStoreId())));
+        List<UUID> storeIds = storesPage.getContent().stream()
+                .map(Store::getStoreId)
+                .collect(Collectors.toList());
+
+        List<Object[]> ratings = reviewRepository.findAverageRatingsByStoreIds(storeIds);
+        Map<UUID, Double> ratingMap = ratings.stream()
+                .collect(Collectors.toMap(row -> (UUID) row[0], row -> (Double) row[1]));
+
+        return storesPage.map(store -> new StoreSearchResponseDto(
+                store.getStoreName(),
+                ratingMap.getOrDefault(store.getStoreId(), 0.0)
+        ));
     }
 
-    private double getAverageRating(UUID storeId) {
-        return reviewRepository.findAverageRatingByStoreId(storeId).orElse(0.0);
-    }
+
+//    private double getAverageRating(UUID storeId) {
+//        return reviewRepository.findAverageRatingByStoreId(storeId).orElse(0.0);
+//    }
 
     public StoreDetailResponseDto getStoreDetail(UUID storeId) {
         Store store = storeRepository.findById(storeId)
