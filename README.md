@@ -246,7 +246,8 @@ client의 request에 가장 먼저 filter를 거쳐 어떤 요청이 오는지 �
 추가로 여러 설정들이 추가되었는데 Config.java나 resource에 .xml 파일 작성 등.. 시간을 참 많이 잡아먹고 에러도 참 많이 발생했던 것 같습니다.
 
 
-> 
+> swagger
+
 이 프로젝트를 처음 보는 개발자 입장에서 어떻게 하면 좀 더 쉽고 명확하게 이해시킬 수 있을까 고민 끝에 swagger와 rest docs를 알게 되었고
 이중 swagger를 선택한 이유는 rest docs는 구현까지 시간이 부족할 것이라고 판단했기 때문입니다.
 ![image](https://github.com/user-attachments/assets/dbfaf2ac-9093-4d2d-bdb6-1c962009ec41)
