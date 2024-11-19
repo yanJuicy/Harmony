@@ -3,6 +3,7 @@ package com.sparta.harmony.order.service;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.order.dto.*;
 import com.sparta.harmony.order.entity.*;
+import com.sparta.harmony.order.repository.OrderMenuRepository;
 import com.sparta.harmony.order.repository.OrderRepository;
 import com.sparta.harmony.store.repository.StoreRepository;
 import com.sparta.harmony.user.entity.Address;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,6 +32,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
+    private final OrderMenuRepository orderMenuRepository;
 
     // 주문 생성. user 이상 사용 가능
     @Transactional
@@ -72,12 +75,11 @@ public class OrderService {
         orderRepository.save(order);
 
         return new OrderResponseDto(order);
-
     }
 
     // 주문 조회. user이상 조회 가능
     @Transactional(readOnly = true)
-    public OrderResponsePageDto getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
+    public Page<OrderResponseDto> getOrders(User user, int page, int size, String sortBy, boolean isAsc) {
         // 페이징 처리
         Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;
@@ -86,40 +88,24 @@ public class OrderService {
         Role userRoleEnum = user.getRole();
 
         if (userRoleEnum.equals(Role.USER) || userRoleEnum.equals(Role.OWNER)) {
-            orderList = orderRepository.findAllByUserAndDeletedByFalse(user, pageable);
+            orderList = orderRepository.findAllByUserAndDeletedFalse(user, pageable);
         } else {
             orderList = orderRepository.findAllByDeletedFalse(pageable);
         }
 
-        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
-
-        return new OrderResponsePageDto(
-                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
-                orderResponseDto.getTotalPages(),
-                orderResponseDto.getTotalElements(),
-                orderResponseDto.getSize(),
-                orderResponseDto.getContent()
-        );
+        return orderList.map(OrderResponseDto::new);
     }
 
     // 특정 가게의 주문 조회. OWNER 이상 사용자만 조회 가능
     @Transactional(readOnly = true)
-    public OrderResponsePageDto getOrdersByStoreId(UUID storeId, int page, int size,
+    public Page<OrderResponseDto> getOrdersByStoreId(UUID storeId, int page, int size,
                                                    String sortBy, boolean isAsc) {
         // 페이징 처리
         Pageable pageable = getPageable(page, size, sortBy, isAsc);
         Page<Order> orderList;
         orderList = orderRepository.findOrderByStoreIdAndDeletedFalse(storeId, pageable);
 
-        Page<OrderResponseDto> orderResponseDto = orderList.map(OrderResponseDto::new);
-
-        return new OrderResponsePageDto(
-                orderResponseDto.getNumber() + 1, // 페이지 1부터 시작하도록
-                orderResponseDto.getTotalPages(),
-                orderResponseDto.getTotalElements(),
-                orderResponseDto.getSize(),
-                orderResponseDto.getContent()
-        );
+        return orderList.map(OrderResponseDto::new);
     }
 
     // 주문 ID를 이용한 주문 상세 조회. user와 owner는 자신의 주문만 상세 조회 가능.
@@ -174,14 +160,17 @@ public class OrderService {
                 throw new IllegalArgumentException("다른 유저의 주문은 취소할 수 없습니다.");
             }
         }
-        softDeleteOrderAndDeleteOrderMenu(order, email);
+        List<OrderMenu> orderMenuList = orderMenuRepository.findAllByOrder(order);
+        for (OrderMenu orderMenu : orderMenuList) {
+            orderMenu.softDelete(email);
+        }
 
+        order.softDelete(email);
         order.updateOrderStatus(OrderStatusEnum.CANCELED);
         orderRepository.save(order);
+        orderMenuRepository.saveAll(orderMenuList);
 
-        return OrderResponseDto.builder()
-                .orderId(orderId)
-                .build();
+        return new OrderResponseDto(order);
     }
 
     private void softDeleteOrderAndDeleteOrderMenu(Order order, String email) {

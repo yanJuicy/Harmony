@@ -1,8 +1,8 @@
 package com.sparta.harmony.menu.service;
 
-import com.sparta.harmony.menu.dto.MenuCreateRequestDto;
-import com.sparta.harmony.menu.dto.MenuCreateResponseDto;
-import com.sparta.harmony.menu.dto.MenuGetResponseDto;
+import com.sparta.harmony.ai.service.AiService;
+import com.sparta.harmony.menu.dto.MenuRequestDto;
+import com.sparta.harmony.menu.dto.MenuResponseDto;
 import com.sparta.harmony.menu.entity.Menu;
 import com.sparta.harmony.menu.repository.MenuRepository;
 import com.sparta.harmony.store.entity.Store;
@@ -20,23 +20,27 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final StoreRepository storeRepository;
+    private final AiService aiService;
 
-    public MenuCreateResponseDto createMenu(UUID storeId, MenuCreateRequestDto menuCreateRequestDto) {
+    public MenuResponseDto createMenu(UUID storeId, MenuRequestDto menuRequestDto) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식점"));
 
+        String aiCreateMenuDescription = aiService.aiCreateMenuDescription(menuRequestDto.getDescriptionRequest());
+
         Menu menu = Menu.builder()
-                .name(menuCreateRequestDto.getName())
-                .description(menuCreateRequestDto.getDescription())
-                .price(menuCreateRequestDto.getPrice())
-                .imageUrl(menuCreateRequestDto.getImageUrl())
-                .isAvailable(menuCreateRequestDto.isAvailable())
+                .name(menuRequestDto.getName())
+                .description(aiCreateMenuDescription)
+                .price(menuRequestDto.getPrice())
+                .imageUrl(menuRequestDto.getImageUrl())
+                .isAvailable(menuRequestDto.isAvailable())
                 .store(store)
                 .build();
 
         Menu savedMenu = menuRepository.save(menu);
+        aiService.save(menuRequestDto.getDescriptionRequest(), aiCreateMenuDescription, savedMenu);
 
-        return MenuCreateResponseDto.builder()
+        return MenuResponseDto.builder()
                 .menuId(savedMenu.getMenuId())
                 .storeId(storeId)
                 .name(savedMenu.getName())
@@ -47,14 +51,14 @@ public class MenuService {
                 .build();
     }
 
-    public MenuGetResponseDto getMenu(UUID storeId, UUID menuId) {
+    public MenuResponseDto getMenu(UUID storeId, UUID menuId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식점"));
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 음식"));
 
-        return MenuGetResponseDto.builder()
+        return MenuResponseDto.builder()
                 .menuId(menuId)
                 .storeId(storeId)
                 .name(menu.getName())

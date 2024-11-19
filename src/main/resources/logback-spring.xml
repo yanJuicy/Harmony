@@ -14,7 +14,7 @@
 
     <!-- 파일 앱렌더 -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/log/harmonyApp.log</file> <!-- 로그 파일 경로 -->
+        <file>/var/log/harmony/harmonyApp.log</file> <!-- 로그 파일 경로 -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
