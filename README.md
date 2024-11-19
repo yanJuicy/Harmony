@@ -253,7 +253,10 @@ client의 request에 가장 먼저 filter를 거쳐 어떤 요청이 오는지 �
 
 ![image](https://github.com/user-attachments/assets/9c61a2d3-dc31-4788-a9fd-066a54ec28ba)
 
-직접 swagger 사용해보고 싶으시면 👉 [click here](http://ec2-3-35-214-44.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html) <br><br>
+직접 swagger 사용해보고 싶으시면 👉 [click here](http://ec2-3-35-214-44.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/index.html) 
+*Order controller, Payment controller만 custom 되어있습니다만, 현재는 UUID가 맞지 않는 것이 많이 있어 수정중에 있습니다.*
+
+<br><br>
 
 
 ### 프로젝트 회고
@@ -283,10 +286,12 @@ client의 request에 가장 먼저 filter를 거쳐 어떤 요청이 오는지 �
                 address = buildAddressUseAddress(basicUserAddress);
             }
 ```
-단순히 주문 생성이지만 주소지가 들어오는 경우와 주소지가 안들어온 경우가 있을텐데 주소지가 안들어온 경우 중에서 포장인 경우엔 가게의 주소를, 배달인 경우 user의 기본 주소를.. 모든 API에 대해서 과연 단순한 CRUD가 아니라 어떤 조건이 들어오게 되어서 결과가 바뀔지에 대한 생각을 많이 했던 것 같습니다. 또한 logging과 swagger를 제외해버리고 비즈니스 로직을 좀 더 상세히 구현한다던가, 미쳐 구현하지 못했던 기능을 해본다던가.. 하는 생각을 했었지만 제가 구현한 것을 남들이 더 잘 다룰 수 있게, 어떤 기능들이 있는지 보여주는 것이 더 큰 가치가 있다고 판단하고 이 기능들을 구현해보았습니다. Order controller, Payment controller만 custom 되어있습니다만, 현재는 UUID가 맞지 않는 것이 많이 있어 수정중에 있습니다. 또한, 단순히 기술을 구현하는 것을 넘어 음식 주문 관리 플랫폼의 도메인 로직을 깊이 이해하고 이를 코드로 풀어내는 과정이 중요하다고 생각했습니다.이번에 프로젝트를 할 때 test code와 debugging을 많이 활용하지 못한 부분에 대한 아쉬움도 생각납니다. 서비스 로직을 만들고 app 실행 후 postman으로 검증하는 부분이 많았기 때문에 이전에 unit test 등을 많이 하였으면 조기에 문제를 발견 했을텐데..하는 생각을 많이 했었습니다. debugging도 마찬가지로 console에 하나하나 출력해보는 경우가 많았는데 다음부터는 debugging을 이용해서 bug를 찾고 코드를 수정할 수 있도록 해야겠습니다.
+단순히 주문 생성이지만 주소지가 들어오는 경우와 주소지가 안들어온 경우가 있을텐데 주소지가 안들어온 경우 중에서 포장인 경우엔 가게의 주소를, 배달인 경우 user의 기본 주소를.. 모든 API에 대해서 과연 단순한 CRUD가 아니라 어떤 조건이 들어오게 되어서 결과가 바뀔지에 대한 생각을 많이 했던 것 같습니다. 또한 logging과 swagger를 제외해버리고 비즈니스 로직을 좀 더 상세히 구현한다던가, 미쳐 구현하지 못했던 기능을 해본다던가.. 하는 생각을 했었지만 제가 구현한 것을 남들이 더 잘 다룰 수 있게, 어떤 기능들이 있는지 보여주는 것이 더 큰 가치가 있다고 판단하고 이 기능들을 구현해보았습니다. 
+
+이번에 프로젝트를 할 때 test code와 debugging을 많이 활용하지 못한 부분에 대한 아쉬움도 생각납니다. 서비스 로직을 만들고 app 실행 후 postman으로 검증하는 부분이 많았기 때문에 이전에 unit test 등을 많이 하였으면 조기에 문제를 발견 했을텐데..하는 생각을 많이 했었습니다. debugging도 마찬가지로 console에 하나하나 출력해보는 경우가 많았는데 다음부터는 debugging을 이용해서 bug를 찾고 코드를 수정할 수 있도록 해야겠습니다.
 
 - 이한주 : 
-- 조창현 : 
+- 조창현 : 또한, 단순히 기술을 구현하는 것을 넘어 음식 주문 관리 플랫폼의 도메인 로직을 깊이 이해하고 이를 코드로 풀어내는 과정이 중요하다고 생각했습니다.
 - 장윤지 : 음식점 생성 api를 호출할 때 postcode의 데이터 값을 varchar(6)으로 설정하고 6보다 작은 길이의 값을 넣어 테스트하였는데 계속 6보다 긴 길이의 값이 들어갔다는 오류가 발생했습니다. 살펴보니, Address 클래스의 생성자 매개변수 순서와 createStore 메서드에서 생성자를 호출하는 인수의 순서가 일치하지 않아서 계속 오류가 발생하던 것이었습니다. 순서가 일치하지 않기때문에 postcode 값에는 address가, address값에는 postcode가 들어가 있어 발생하는 오류 임을 인지한 후 순서를 바꿔주니 정상 작동하는 것을 확인했습니다. 
 ![image](https://github.com/user-attachments/assets/08cb0d18-e661-415f-8abb-b444ccb00057)
 
